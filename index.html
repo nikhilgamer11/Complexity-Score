@@ -22,6 +22,7 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
 
+  /* --- Layout & Typography --- */
   .header {
     padding: 18px 28px; border-bottom: 1px solid var(--border);
     display: flex; align-items: center; justify-content: space-between;
@@ -30,6 +31,9 @@
   .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 17px; letter-spacing: -0.5px; }
   .logo span { color: var(--lu-blue); }
 
+  .layout { display: grid; grid-template-columns: 250px 1fr 270px; height: calc(100vh - 57px); }
+
+  /* --- Badges & Status --- */
   .status-badge {
     display: flex; align-items: center; gap: 8px;
     padding: 6px 14px; border-radius: 6px;
@@ -42,8 +46,7 @@
   .status-badge.neutral { background: var(--surface2); border-color: var(--border); color: var(--muted); }
   .status-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
 
-  .layout { display: grid; grid-template-columns: 250px 1fr 270px; height: calc(100vh - 57px); }
-
+  /* --- Left Panel --- */
   .left-panel {
     border-right: 1px solid var(--border); padding: 20px 16px;
     overflow-y: auto; background: var(--surface);
@@ -80,6 +83,7 @@
   .meter-track { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
   .meter-fill { height: 100%; border-radius: 3px; transition: width 0.4s cubic-bezier(0.4,0,0.2,1), background 0.4s; }
 
+  /* --- Main Content (Table) --- */
   .main-content { overflow-y: auto; }
   .col-headers {
     display: grid; grid-template-columns: 1fr 155px 62px 75px;
@@ -117,6 +121,7 @@
   .row-wscore.neg { color: var(--red); }
   .row-wscore.zero { color: var(--muted); }
 
+  /* --- Right Panel --- */
   .right-panel {
     border-left: 1px solid var(--border); padding: 20px 16px;
     overflow-y: auto; background: var(--surface);
@@ -148,6 +153,40 @@
     transition: all 0.3s; pointer-events: none;
   }
   .toast.show { opacity: 1; transform: translateY(0); }
+
+  /* --- Mobile Responsiveness --- */
+  @media (max-width: 992px) {
+    .layout {
+      grid-template-columns: 1fr;
+      height: auto;
+    }
+    .left-panel, .right-panel {
+      border: none;
+      border-bottom: 1px solid var(--border);
+      height: auto;
+      overflow-y: visible;
+    }
+    .main-content { overflow-y: visible; }
+  }
+
+  @media (max-width: 600px) {
+    .col-headers { display: none; } /* Hide tabular headers on small screens */
+    .score-row {
+      grid-template-columns: 1fr;
+      padding: 16px 20px;
+      gap: 12px;
+    }
+    .row-question { font-weight: 500; margin-bottom: 4px; }
+    
+    /* Convert rows to card-style labels */
+    .row-weight, .row-wscore {
+      display: flex;
+      justify-content: space-between;
+      text-align: left;
+    }
+    .row-weight::before { content: "Weight:"; color: var(--muted); font-family: 'DM Sans', sans-serif; }
+    .row-wscore::before { content: "Score:"; color: var(--muted); font-family: 'DM Sans', sans-serif; }
+  }
 </style>
 </head>
 <body>
@@ -167,7 +206,7 @@
       <div class="field"><label>Learner Count</label><input type="text" id="learnerCount" placeholder="e.g. 3k+"></div>
       <div class="field">
         <label>Use Case</label>
-        <select id="useCase" onchange="renderRows();recompute()">
+        <select id="useCase" onchange="App.handleUseCaseChange()">
           <option value="I">Internal</option>
           <option value="E">External</option>
           <option value="B">Both</option>
@@ -175,7 +214,7 @@
       </div>
       <div class="field">
         <label>Deal Stage</label>
-        <select id="dealStage" onchange="recompute()">
+        <select id="dealStage" onchange="App.recompute()">
           <option value="Initial Discovery">Initial Discovery</option>
           <option value="Initial Demo">Initial Demo</option>
           <option value="Deep Dive Discovery">Deep Dive Discovery</option>
@@ -187,9 +226,9 @@
     </div>
     <div>
       <div class="section-label">Scorecard Type</div>
-      <button class="tab-btn active" onclick="switchTab('employee')" id="tab-employee">Employee Training <span class="tab-pill" id="pill-employee">—</span></button>
-      <button class="tab-btn" onclick="switchTab('customer')" id="tab-customer">Customer Education <span class="tab-pill" id="pill-customer">—</span></button>
-      <button class="tab-btn" onclick="switchTab('member')" id="tab-member">Member / Association <span class="tab-pill" id="pill-member">—</span></button>
+      <button class="tab-btn active" onclick="App.switchTab('employee')" id="tab-employee">Employee Training <span class="tab-pill" id="pill-employee">—</span></button>
+      <button class="tab-btn" onclick="App.switchTab('customer')" id="tab-customer">Customer Education <span class="tab-pill" id="pill-customer">—</span></button>
+      <button class="tab-btn" onclick="App.switchTab('member')" id="tab-member">Member / Association <span class="tab-pill" id="pill-member">—</span></button>
     </div>
     <div>
       <div class="section-label">Complexity Score</div>
@@ -235,7 +274,7 @@
       </div>
     </div>
     <div style="margin-top:auto;padding-top:16px;border-top:1px solid var(--border)">
-      <button class="export-btn" onclick="exportExcel()">
+      <button class="export-btn" onclick="App.exportExcel()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Export to Excel
       </button>
@@ -247,284 +286,352 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
-const TABS = {
-  employee: {
-    label: "Employee Training",
-    rows: [
-      { cat:"UX/UI",              q:"Custom UI (Code access / custom widgets / fonts etc)",                                                              w:{I:5,  E:5,  B:5  }, type:"crit" },
-      { cat:"UX/UI",              q:"Unsupported UI Languages required — current language offering",                                                     w:{I:5,  E:5,  B:5  }, type:"crit" },
-      { cat:"Mobile",             q:"Requirement for white-labelled mobile app that includes push notifications, SMS functionality and is fully branded", w:{I:5,  E:5,  B:5  }, type:"crit" },
-      { cat:"Scale",              q:"More than 5 languages for course translation and management",                                                        w:{I:10, E:10, B:10 }, type:"crit" },
-      { cat:"User Management",    q:"More than 10K users",                                                                                               w:{I:3,  E:1,  B:1  }, type:"crit" },
-      { cat:"User Management",    q:"Hierarchy structure — multiple group memberships, manager permissions, complex role permissions",                    w:{I:12, E:0,  B:9  }, type:"crit" },
-      { cat:"Skills",             q:"Competency / Skill Matrix needs from the LMS",                                                                      w:{I:10, E:10, B:10 }, type:"crit" },
-      { cat:"Courses & Content",  q:"More than 100 courses",                                                                                             w:{I:6,  E:6,  B:6  }, type:"crit" },
-      { cat:"Courses & Content",  q:"More than 1000 course modules — asset management",                                                                  w:{I:8,  E:8,  B:8  }, type:"crit" },
-      { cat:"Courses & Content",  q:"Content format incompatibility — AICC, Labs or need for LTI / AR / VR",                                            w:{I:8,  E:8,  B:8  }, type:"crit" },
-      { cat:"Courses & Content",  q:"Heavy Resource Management (ILT scheduling / recurring sessions)",                                                   w:{I:5,  E:5,  B:5  }, type:"crit" },
-      { cat:"Courses & Content",  q:"Requirement for AI functionality — course creation, AI assistant, AI tagging",                                      w:{I:8,  E:8,  B:8  }, type:"crit" },
-      { cat:"Courses & Content",  q:"Complex approval / review workflows / prerequisites / equivalency",                                                 w:{I:7,  E:7,  B:7  }, type:"crit" },
-      { cat:"Integrations",       q:"Integration(s) need to be custom / not OOTB, or require complex manager structure via API",                         w:{I:5,  E:5,  B:5  }, type:"crit" },
-      { cat:"Integrations",       q:"Heavy API Use / Direct DB Access / Bulk Data Export",                                                               w:{I:5,  E:5,  B:5  }, type:"crit" },
-      { cat:"Integrations",       q:"Lack of developer resource / willingness to implement tech workarounds",                                            w:{I:10, E:10, B:10 }, type:"crit" },
-      { cat:"Scale",              q:"Need for more than 250 Dynamic Rules / 30+ CUD fields",                                                             w:{I:5,  E:5,  B:5  }, type:"crit" },
-      { cat:"Learning Ecosystem", q:"Unsupported Content Integrations — Udemy, Pluralsight, etc.",                                                       w:{I:8,  E:8,  B:8  }, type:"crit" },
-      { cat:"Learning Ecosystem", q:"Requirement to migrate more than 2 years worth of data",                                                            w:{I:3,  E:3,  B:3  }, type:"crit" },
-      { cat:"Workflows",          q:"Requirement for learners to create courses for their learning community",                                            w:{I:8,  E:8,  B:8  }, type:"crit" },
-      { cat:"Pain",               q:"Has clearly identified pain that LearnUpon can solve",                                                              w:{I:10, E:10, B:10 }, type:"pain" },
-    ]
+/**
+ * ==========================================
+ * MODULE 1: DATA & CONFIGURATION
+ * ==========================================
+ * In the future, this object could be moved to a separate file (e.g., data.js) 
+ * and imported to keep your main logic completely detached from the content.
+ */
+const DataStore = {
+  TABS: {
+    employee: {
+      label: "Employee Training",
+      rows: [
+        { cat:"UX/UI",              q:"Custom UI (Code access / custom widgets / fonts etc)",                                      w:{I:5,  E:5,  B:5  }, type:"crit" },
+        { cat:"UX/UI",              q:"Unsupported UI Languages required — current language offering",                             w:{I:5,  E:5,  B:5  }, type:"crit" },
+        { cat:"Mobile",             q:"Requirement for white-labelled mobile app that includes push notifications, SMS functionality and is fully branded", w:{I:5,  E:5,  B:5  }, type:"crit" },
+        { cat:"Scale",              q:"More than 5 languages for course translation and management",                               w:{I:10, E:10, B:10 }, type:"crit" },
+        { cat:"User Management",    q:"More than 10K users",                                                                       w:{I:3,  E:1,  B:1  }, type:"crit" },
+        { cat:"User Management",    q:"Hierarchy structure — multiple group memberships, manager permissions, complex role permissions",                    w:{I:12, E:0,  B:9  }, type:"crit" },
+        { cat:"Skills",             q:"Competency / Skill Matrix needs from the LMS",                                              w:{I:10, E:10, B:10 }, type:"crit" },
+        { cat:"Courses & Content",  q:"More than 100 courses",                                                                     w:{I:6,  E:6,  B:6  }, type:"crit" },
+        { cat:"Courses & Content",  q:"More than 1000 course modules — asset management",                                          w:{I:8,  E:8,  B:8  }, type:"crit" },
+        { cat:"Courses & Content",  q:"Content format incompatibility — AICC, Labs or need for LTI / AR / VR",                     w:{I:8,  E:8,  B:8  }, type:"crit" },
+        { cat:"Courses & Content",  q:"Heavy Resource Management (ILT scheduling / recurring sessions)",                           w:{I:5,  E:5,  B:5  }, type:"crit" },
+        { cat:"Courses & Content",  q:"Requirement for AI functionality — course creation, AI assistant, AI tagging",              w:{I:8,  E:8,  B:8  }, type:"crit" },
+        { cat:"Courses & Content",  q:"Complex approval / review workflows / prerequisites / equivalency",                         w:{I:7,  E:7,  B:7  }, type:"crit" },
+        { cat:"Integrations",       q:"Integration(s) need to be custom / not OOTB, or require complex manager structure via API", w:{I:5,  E:5,  B:5  }, type:"crit" },
+        { cat:"Integrations",       q:"Heavy API Use / Direct DB Access / Bulk Data Export",                                       w:{I:5,  E:5,  B:5  }, type:"crit" },
+        { cat:"Integrations",       q:"Lack of developer resource / willingness to implement tech workarounds",                    w:{I:10, E:10, B:10 }, type:"crit" },
+        { cat:"Scale",              q:"Need for more than 250 Dynamic Rules / 30+ CUD fields",                                     w:{I:5,  E:5,  B:5  }, type:"crit" },
+        { cat:"Learning Ecosystem", q:"Unsupported Content Integrations — Udemy, Pluralsight, etc.",                               w:{I:8,  E:8,  B:8  }, type:"crit" },
+        { cat:"Learning Ecosystem", q:"Requirement to migrate more than 2 years worth of data",                                    w:{I:3,  E:3,  B:3  }, type:"crit" },
+        { cat:"Workflows",          q:"Requirement for learners to create courses for their learning community",                   w:{I:8,  E:8,  B:8  }, type:"crit" },
+        { cat:"Pain",               q:"Has clearly identified pain that LearnUpon can solve",                                      w:{I:10, E:10, B:10 }, type:"pain" },
+      ]
+    },
+    customer: {
+      label: "Customer Education",
+      rows: [
+        { cat:"UX/UI",              q:"Custom UI (Code access / custom widgets / fonts etc)",                                      w:{I:5,  E:5,  B:5  }, type:"crit" },
+        { cat:"UX/UI",              q:"Unsupported UI Languages required — current language offering",                             w:{I:7,  E:8,  B:7  }, type:"crit" },
+        { cat:"Mobile",             q:"Requirement for white-labelled mobile app that includes push notifications, SMS functionality and is fully branded", w:{I:5,  E:5,  B:5  }, type:"crit" },
+        { cat:"User Management",    q:"More than 10K users",                                                                       w:{I:5,  E:5,  B:5  }, type:"crit" },
+        { cat:"User Management",    q:"Hierarchy structure — multiple group memberships, manager permissions, complex role permissions",                    w:{I:3,  E:3,  B:3  }, type:"crit" },
+        { cat:"User Management",    q:"Complex CUD requirements",                                                                  w:{I:5,  E:5,  B:5  }, type:"crit" },
+        { cat:"Certification",      q:"Customer certification required",                                                           w:{I:2,  E:2,  B:2  }, type:"crit" },
+        { cat:"Courses & Content",  q:"More than 100 Courses",                                                                     w:{I:3,  E:3,  B:3  }, type:"crit" },
+        { cat:"Courses & Content",  q:"Consistent updates to content / wide range of languages / managing many versions of same content",                  w:{I:8,  E:8,  B:8  }, type:"crit" },
+        { cat:"Courses & Content",  q:"Content incompatibility or complexity — Labs, Walkme's, hotspots",                          w:{I:8,  E:8,  B:8  }, type:"crit" },
+        { cat:"Courses & Content",  q:"Robust ILT Requirements — resource-heavy configuration",                                    w:{I:6,  E:6,  B:6  }, type:"crit" },
+        { cat:"Reporting",          q:"Detailed reporting requirements OOTB",                                                      w:{I:8,  E:8,  B:8  }, type:"crit" },
+        { cat:"Courses & Content",  q:"Complex approval / review workflows / prerequisites / equivalency",                         w:{I:7,  E:7,  B:7  }, type:"crit" },
+        { cat:"Integrations",       q:"Integration(s) need to be custom — with their own platform / product",                      w:{I:7,  E:7,  B:7  }, type:"crit" },
+        { cat:"Integrations",       q:"Completely unsupported integration",                                                        w:{I:7,  E:7,  B:7  }, type:"crit" },
+        { cat:"Integrations",       q:"Heavy API Use / Direct DB Access / Bulk Data Export",                                       w:{I:7,  E:7,  B:7  }, type:"crit" },
+        { cat:"Integrations",       q:"Lack of developer resource / willingness to implement tech workarounds",                    w:{I:10, E:10, B:10 }, type:"crit" },
+        { cat:"Scale",              q:"Need for more than 250 Dynamic Rules / 30+ CUD fields",                                     w:{I:5,  E:5,  B:5  }, type:"crit" },
+        { cat:"Scale",              q:"More than 10 portals / complex course or portal licensing / Bulk or Group Licences",        w:{I:2,  E:8,  B:8  }, type:"crit" },
+        { cat:"eCommerce",          q:"Complex eCommerce pricing model (subscriptions, geo-specific)",                             w:{I:0,  E:10, B:10 }, type:"crit" },
+        { cat:"eCommerce",          q:"Unsupported eCommerce payments (payment gateway, Pay with PO)",                             w:{I:10, E:10, B:10 }, type:"crit" },
+        { cat:"External Focus",     q:"Complex billing / finance processes related to LMS",                                        w:{I:4,  E:8,  B:7  }, type:"crit" },
+        { cat:"Existing Solution",  q:"Using Custom or Legacy LMS (CSOD, SuccessFactors, Moodle etc.)",                            w:{I:3,  E:3,  B:3  }, type:"crit" },
+        { cat:"Pain",               q:"Has clearly identified pain that LearnUpon can solve",                                      w:{I:10, E:10, B:10 }, type:"pain" },
+        { cat:"Search",             q:"Detailed search requirements",                                                              w:{I:3,  E:3,  B:3  }, type:"crit" },
+        { cat:"External Focus",     q:"Custom Web Pages",                                                                          w:{I:5,  E:5,  B:5  }, type:"crit" },
+      ]
+    },
+    member: {
+      label: "Member / Association",
+      rows: [
+        { cat:"UX/UI",              q:"Unsupported UI Languages required — current language offering",                             w:{I:7,  E:8,  B:7  }, type:"crit" },
+        { cat:"Mobile",             q:"Requirement for white-labelled mobile app that includes push notifications, SMS functionality and is fully branded", w:{I:5,  E:5,  B:5  }, type:"crit" },
+        { cat:"User Management",    q:"More than 10K users",                                                                       w:{I:5,  E:5,  B:5  }, type:"crit" },
+        { cat:"User Management",    q:"Hierarchy structure — multiple group memberships, manager permissions, complex role permissions",                    w:{I:8,  E:8,  B:8  }, type:"crit" },
+        { cat:"CPD",                q:"Complex CPD tracking — learner or manager dashboards, etc.",                                w:{I:10, E:10, B:10 }, type:"crit" },
+        { cat:"Courses & Content",  q:"More than 100 courses",                                                                     w:{I:5,  E:5,  B:5  }, type:"crit" },
+        { cat:"Courses & Content",  q:"More than 1000 content modules",                                                            w:{I:7,  E:7,  B:7  }, type:"crit" },
+        { cat:"Courses & Content",  q:"Third-party content requirements not OOTB",                                                 w:{I:10, E:10, B:10 }, type:"crit" },
+        { cat:"Courses & Content",  q:"Robust ILT Requirements — resource-heavy configuration",                                    w:{I:10, E:10, B:10 }, type:"crit" },
+        { cat:"Courses & Content",  q:"Complex approval / review workflows / prerequisites / equivalency",                         w:{I:7,  E:7,  B:7  }, type:"crit" },
+        { cat:"Integrations",       q:"Unsupported Integration(s) — AMS, CRM, MIS system",                                         w:{I:5,  E:5,  B:5  }, type:"crit" },
+        { cat:"Integrations",       q:"Embedded Learning Requirement",                                                             w:{I:7,  E:7,  B:7  }, type:"crit" },
+        { cat:"Integrations",       q:"Heavy API Use / Direct DB Access / Bulk Data Export",                                       w:{I:7,  E:7,  B:7  }, type:"crit" },
+        { cat:"Integrations",       q:"Lack of developer resource / willingness to implement tech workarounds",                    w:{I:10, E:10, B:10 }, type:"crit" },
+        { cat:"Scale",              q:"Need for more than 250 Dynamic Rules / 30+ CUD fields",                                     w:{I:5,  E:5,  B:5  }, type:"crit" },
+        { cat:"Scale",              q:"More than 10 portals / complex course or portal licensing / Bulk or Group Licences",        w:{I:2,  E:8,  B:8  }, type:"crit" },
+        { cat:"eCommerce",          q:"Complex eCommerce pricing model (subscriptions, geo-specific)",                             w:{I:8,  E:8,  B:8  }, type:"crit" },
+        { cat:"eCommerce",          q:"Unsupported eCommerce payments (payment gateway, Pay with PO)",                             w:{I:8,  E:8,  B:8  }, type:"crit" },
+        { cat:"External Focus",     q:"Complex billing / finance processes related to LMS",                                        w:{I:8,  E:8,  B:8  }, type:"crit" },
+        { cat:"Existing Solution",  q:"Using Custom or Legacy LMS",                                                                w:{I:3,  E:3,  B:3  }, type:"crit" },
+        { cat:"Social",             q:"Deep community feature requirements",                                                       w:{I:5,  E:5,  B:5  }, type:"crit" },
+        { cat:"Social",             q:"Sharing badges or gamification on social",                                                  w:{I:5,  E:5,  B:5  }, type:"crit" },
+        { cat:"Pain",               q:"Has clearly identified pain that LearnUpon can solve",                                      w:{I:10, E:10, B:10 }, type:"pain" },
+      ]
+    }
   },
-  customer: {
-    label: "Customer Education",
-    rows: [
-      { cat:"UX/UI",              q:"Custom UI (Code access / custom widgets / fonts etc)",                                                              w:{I:5,  E:5,  B:5  }, type:"crit" },
-      { cat:"UX/UI",              q:"Unsupported UI Languages required — current language offering",                                                     w:{I:7,  E:8,  B:7  }, type:"crit" },
-      { cat:"Mobile",             q:"Requirement for white-labelled mobile app that includes push notifications, SMS functionality and is fully branded", w:{I:5,  E:5,  B:5  }, type:"crit" },
-      { cat:"User Management",    q:"More than 10K users",                                                                                               w:{I:5,  E:5,  B:5  }, type:"crit" },
-      { cat:"User Management",    q:"Hierarchy structure — multiple group memberships, manager permissions, complex role permissions",                    w:{I:3,  E:3,  B:3  }, type:"crit" },
-      { cat:"User Management",    q:"Complex CUD requirements",                                                                                          w:{I:5,  E:5,  B:5  }, type:"crit" },
-      { cat:"Certification",      q:"Customer certification required",                                                                                   w:{I:2,  E:2,  B:2  }, type:"crit" },
-      { cat:"Courses & Content",  q:"More than 100 Courses",                                                                                             w:{I:3,  E:3,  B:3  }, type:"crit" },
-      { cat:"Courses & Content",  q:"Consistent updates to content / wide range of languages / managing many versions of same content",                  w:{I:8,  E:8,  B:8  }, type:"crit" },
-      { cat:"Courses & Content",  q:"Content incompatibility or complexity — Labs, Walkme's, hotspots",                                                  w:{I:8,  E:8,  B:8  }, type:"crit" },
-      { cat:"Courses & Content",  q:"Robust ILT Requirements — resource-heavy configuration",                                                            w:{I:6,  E:6,  B:6  }, type:"crit" },
-      { cat:"Reporting",          q:"Detailed reporting requirements OOTB",                                                                              w:{I:8,  E:8,  B:8  }, type:"crit" },
-      { cat:"Courses & Content",  q:"Complex approval / review workflows / prerequisites / equivalency",                                                 w:{I:7,  E:7,  B:7  }, type:"crit" },
-      { cat:"Integrations",       q:"Integration(s) need to be custom — with their own platform / product",                                              w:{I:7,  E:7,  B:7  }, type:"crit" },
-      { cat:"Integrations",       q:"Completely unsupported integration",                                                                                w:{I:7,  E:7,  B:7  }, type:"crit" },
-      { cat:"Integrations",       q:"Heavy API Use / Direct DB Access / Bulk Data Export",                                                               w:{I:7,  E:7,  B:7  }, type:"crit" },
-      { cat:"Integrations",       q:"Lack of developer resource / willingness to implement tech workarounds",                                            w:{I:10, E:10, B:10 }, type:"crit" },
-      { cat:"Scale",              q:"Need for more than 250 Dynamic Rules / 30+ CUD fields",                                                             w:{I:5,  E:5,  B:5  }, type:"crit" },
-      { cat:"Scale",              q:"More than 10 portals / complex course or portal licensing / Bulk or Group Licences",                                w:{I:2,  E:8,  B:8  }, type:"crit" },
-      { cat:"eCommerce",          q:"Complex eCommerce pricing model (subscriptions, geo-specific)",                                                     w:{I:0,  E:10, B:10 }, type:"crit" },
-      { cat:"eCommerce",          q:"Unsupported eCommerce payments (payment gateway, Pay with PO)",                                                     w:{I:10, E:10, B:10 }, type:"crit" },
-      { cat:"External Focus",     q:"Complex billing / finance processes related to LMS",                                                                w:{I:4,  E:8,  B:7  }, type:"crit" },
-      { cat:"Existing Solution",  q:"Using Custom or Legacy LMS (CSOD, SuccessFactors, Moodle etc.)",                                                    w:{I:3,  E:3,  B:3  }, type:"crit" },
-      { cat:"Pain",               q:"Has clearly identified pain that LearnUpon can solve",                                                              w:{I:10, E:10, B:10 }, type:"pain" },
-      { cat:"Search",             q:"Detailed search requirements",                                                                                      w:{I:3,  E:3,  B:3  }, type:"crit" },
-      { cat:"External Focus",     q:"Custom Web Pages",                                                                                                  w:{I:5,  E:5,  B:5  }, type:"crit" },
-    ]
-  },
-  member: {
-    label: "Member / Association",
-    rows: [
-      { cat:"UX/UI",              q:"Unsupported UI Languages required — current language offering",                                                     w:{I:7,  E:8,  B:7  }, type:"crit" },
-      { cat:"Mobile",             q:"Requirement for white-labelled mobile app that includes push notifications, SMS functionality and is fully branded", w:{I:5,  E:5,  B:5  }, type:"crit" },
-      { cat:"User Management",    q:"More than 10K users",                                                                                               w:{I:5,  E:5,  B:5  }, type:"crit" },
-      { cat:"User Management",    q:"Hierarchy structure — multiple group memberships, manager permissions, complex role permissions",                    w:{I:8,  E:8,  B:8  }, type:"crit" },
-      { cat:"CPD",                q:"Complex CPD tracking — learner or manager dashboards, etc.",                                                        w:{I:10, E:10, B:10 }, type:"crit" },
-      { cat:"Courses & Content",  q:"More than 100 courses",                                                                                             w:{I:5,  E:5,  B:5  }, type:"crit" },
-      { cat:"Courses & Content",  q:"More than 1000 content modules",                                                                                   w:{I:7,  E:7,  B:7  }, type:"crit" },
-      { cat:"Courses & Content",  q:"Third-party content requirements not OOTB",                                                                        w:{I:10, E:10, B:10 }, type:"crit" },
-      { cat:"Courses & Content",  q:"Robust ILT Requirements — resource-heavy configuration",                                                           w:{I:10, E:10, B:10 }, type:"crit" },
-      { cat:"Courses & Content",  q:"Complex approval / review workflows / prerequisites / equivalency",                                                 w:{I:7,  E:7,  B:7  }, type:"crit" },
-      { cat:"Integrations",       q:"Unsupported Integration(s) — AMS, CRM, MIS system",                                                               w:{I:5,  E:5,  B:5  }, type:"crit" },
-      { cat:"Integrations",       q:"Embedded Learning Requirement",                                                                                     w:{I:7,  E:7,  B:7  }, type:"crit" },
-      { cat:"Integrations",       q:"Heavy API Use / Direct DB Access / Bulk Data Export",                                                               w:{I:7,  E:7,  B:7  }, type:"crit" },
-      { cat:"Integrations",       q:"Lack of developer resource / willingness to implement tech workarounds",                                            w:{I:10, E:10, B:10 }, type:"crit" },
-      { cat:"Scale",              q:"Need for more than 250 Dynamic Rules / 30+ CUD fields",                                                             w:{I:5,  E:5,  B:5  }, type:"crit" },
-      { cat:"Scale",              q:"More than 10 portals / complex course or portal licensing / Bulk or Group Licences",                                w:{I:2,  E:8,  B:8  }, type:"crit" },
-      { cat:"eCommerce",          q:"Complex eCommerce pricing model (subscriptions, geo-specific)",                                                     w:{I:8,  E:8,  B:8  }, type:"crit" },
-      { cat:"eCommerce",          q:"Unsupported eCommerce payments (payment gateway, Pay with PO)",                                                     w:{I:8,  E:8,  B:8  }, type:"crit" },
-      { cat:"External Focus",     q:"Complex billing / finance processes related to LMS",                                                                w:{I:8,  E:8,  B:8  }, type:"crit" },
-      { cat:"Existing Solution",  q:"Using Custom or Legacy LMS",                                                                                        w:{I:3,  E:3,  B:3  }, type:"crit" },
-      { cat:"Social",             q:"Deep community feature requirements",                                                                               w:{I:5,  E:5,  B:5  }, type:"crit" },
-      { cat:"Social",             q:"Sharing badges or gamification on social",                                                                          w:{I:5,  E:5,  B:5  }, type:"crit" },
-      { cat:"Pain",               q:"Has clearly identified pain that LearnUpon can solve",                                                              w:{I:10, E:10, B:10 }, type:"pain" },
-    ]
+  NEXT_STEPS: {
+    Discovery_NotRisky:      ["Schedule Tech Discovery","Schedule Demo","Make Exec Connection"],
+    Discovery_Risky:         ["Discuss with Sales Manager & SE Manager","Open up about gap & test willingness to adapt process","Deep dive on specific gap(s)","Discuss gaps with product","Gather workarounds with SA / SE / CX Teams"],
+    Discovery_VeryRisky:     ["Discuss with Manager, SE Manager & Tommy/Laura/Des","No-Go and Pull out of process","Deep dive on specific gap(s)"],
+    Demo_NotRisky:           ["Engage senior prospect stakeholders","Suggest Trial","Additional Demo","Deeper Dive Discovery","Deeper Dive Demo"],
+    Demo_Risky:              ["Be clear about gaps & test willingness to adapt process","Deep dive on specific gap(s)","Discuss gaps with product for future development","Organise follow-up call to address specific product gap / bring PM for that area"],
+    Demo_VeryRisky:          ["List gaps and get prioritisation from prospect","No-Go and Pull out of process","Deep dive on specific gap(s)","Set call with prospect and Tommy/Des"],
+    DeepDiscovery_NotRisky:  ["Schedule Deep Dive Demo","Tailor specific workflow demo","Make Exec Connection","Move to Trial"],
+    DeepDiscovery_Risky:     ["Review gaps with product and understand roadmap","Present workarounds to gaps","Schedule call with Product to present roadmap to prospect","Share gaps with prospect and get prioritisation","Refocus on the pain we can solve with prospect"],
+    DeepDiscovery_VeryRisky: ["Make Go/No-Go decision with Sales & Product Leaders","Schedule call to sell partnership and present potential solutions","Share gaps with prospect and get prioritisation","Formulate product asks and evaluate development options","Refocus on the pain we can solve with prospect"],
+    DeepDemo_NotRisky:       ["Push for product win","Set up references","Ask for Sale"],
+    DeepDemo_Risky:          ["Get feedback on complexity and gaps from Steve McC","Share gaps with prospect and get prioritisation","Confirm product commitments","Validate solution solves core pains"],
+    DeepDemo_VeryRisky:      ["Get feedback on complexity and gaps from Steve McC","Share gaps with prospect and get prioritisation","Confirm product commitments","Validate solution solves core pains","Get input from Steve McC & CX Leadership"],
+    Trial_NotRisky:          ["Push for product win","Set up references","Ask for Sale"],
+    Trial_Risky:             ["Get feedback on complexity and gaps from Steve McC","Share gaps with prospect and get prioritisation","Validate solution solves core pains"],
+    Trial_VeryRisky:         ["Get feedback on complexity and gaps from Steve McC","Share gaps with prospect and get prioritisation","Validate solution solves core pains","Get input from Steve McC & CX Leadership"],
+    Validation_NotRisky:     ["Get product win confirmation","Confirm LearnUpon solves their key pains","Ask for Sale","Ensure MAP in place and on-track"],
+    Validation_Risky:        ["Get feedback on complexity and gaps from Steve McC","Share gaps with prospect and get prioritisation","Validate solution solves core pains"],
+    Validation_VeryRisky:    ["Get feedback on complexity and gaps from Steve McC","Share gaps with prospect and get prioritisation","Validate solution solves core pains","Get input from Steve McC & CX Leadership"],
   }
 };
 
-const NEXT_STEPS = {
-  Discovery_NotRisky:      ["Schedule Tech Discovery","Schedule Demo","Make Exec Connection"],
-  Discovery_Risky:         ["Discuss with Sales Manager & SE Manager","Open up about gap & test willingness to adapt process","Deep dive on specific gap(s)","Discuss gaps with product","Gather workarounds with SA / SE / CX Teams"],
-  Discovery_VeryRisky:     ["Discuss with Manager, SE Manager & Tommy/Laura/Des","No-Go and Pull out of process","Deep dive on specific gap(s)"],
-  Demo_NotRisky:           ["Engage senior prospect stakeholders","Suggest Trial","Additional Demo","Deeper Dive Discovery","Deeper Dive Demo"],
-  Demo_Risky:              ["Be clear about gaps & test willingness to adapt process","Deep dive on specific gap(s)","Discuss gaps with product for future development","Organise follow-up call to address specific product gap / bring PM for that area"],
-  Demo_VeryRisky:          ["List gaps and get prioritisation from prospect","No-Go and Pull out of process","Deep dive on specific gap(s)","Set call with prospect and Tommy/Des"],
-  DeepDiscovery_NotRisky:  ["Schedule Deep Dive Demo","Tailor specific workflow demo","Make Exec Connection","Move to Trial"],
-  DeepDiscovery_Risky:     ["Review gaps with product and understand roadmap","Present workarounds to gaps","Schedule call with Product to present roadmap to prospect","Share gaps with prospect and get prioritisation","Refocus on the pain we can solve with prospect"],
-  DeepDiscovery_VeryRisky: ["Make Go/No-Go decision with Sales & Product Leaders","Schedule call to sell partnership and present potential solutions","Share gaps with prospect and get prioritisation","Formulate product asks and evaluate development options","Refocus on the pain we can solve with prospect"],
-  DeepDemo_NotRisky:       ["Push for product win","Set up references","Ask for Sale"],
-  DeepDemo_Risky:          ["Get feedback on complexity and gaps from Steve McC","Share gaps with prospect and get prioritisation","Confirm product commitments","Validate solution solves core pains"],
-  DeepDemo_VeryRisky:      ["Get feedback on complexity and gaps from Steve McC","Share gaps with prospect and get prioritisation","Confirm product commitments","Validate solution solves core pains","Get input from Steve McC & CX Leadership"],
-  Trial_NotRisky:          ["Push for product win","Set up references","Ask for Sale"],
-  Trial_Risky:             ["Get feedback on complexity and gaps from Steve McC","Share gaps with prospect and get prioritisation","Validate solution solves core pains"],
-  Trial_VeryRisky:         ["Get feedback on complexity and gaps from Steve McC","Share gaps with prospect and get prioritisation","Validate solution solves core pains","Get input from Steve McC & CX Leadership"],
-  Validation_NotRisky:     ["Get product win confirmation","Confirm LearnUpon solves their key pains","Ask for Sale","Ensure MAP in place and on-track"],
-  Validation_Risky:        ["Get feedback on complexity and gaps from Steve McC","Share gaps with prospect and get prioritisation","Validate solution solves core pains"],
-  Validation_VeryRisky:    ["Get feedback on complexity and gaps from Steve McC","Share gaps with prospect and get prioritisation","Validate solution solves core pains","Get input from Steve McC & CX Leadership"],
+/**
+ * ==========================================
+ * MODULE 2: STATE MANAGEMENT
+ * ==========================================
+ */
+const State = {
+  currentTab: 'employee',
+  answers: { employee: {}, customer: {}, member: {} },
+  
+  getUseCase: () => document.getElementById('useCase').value,
+  getDealStage: () => document.getElementById('dealStage').value,
+  
+  setAnswer: (index, value) => {
+    State.answers[State.currentTab][index] = value;
+  }
 };
 
-let currentTab = 'employee';
-let answers = { employee: {}, customer: {}, member: {} };
+/**
+ * ==========================================
+ * MODULE 3: CORE LOGIC & CALCULATION
+ * ==========================================
+ */
+const Logic = {
+  scoreAnswer: (answer, type) => {
+    if (type === 'pain') return answer === 'Yes' ? 1 : answer === 'No' ? -3 : 0;
+    if (answer === 'Critical')     return -3;
+    if (answer === 'Not Needed')   return 1;
+    if (answer === 'Nice-to-Have') return -1;
+    return 0;
+  },
 
-function getUC()    { return document.getElementById('useCase').value; }
-function getStage() { return document.getElementById('dealStage').value; }
+  computeTabScore: (tabKey) => {
+    const uc = State.getUseCase();
+    return DataStore.TABS[tabKey].rows.reduce((sum, row, i) => {
+      const ans = State.answers[tabKey][i] !== undefined ? State.answers[tabKey][i] : "Don't Know";
+      return sum + (row.w[uc] || 0) * Logic.scoreAnswer(ans, row.type);
+    }, 0);
+  },
 
-function scoreAnswer(answer, type) {
-  if (type === 'pain') return answer === 'Yes' ? 1 : answer === 'No' ? -3 : 0;
-  if (answer === 'Critical')     return -3;
-  if (answer === 'Not Needed')   return 1;
-  if (answer === 'Nice-to-Have') return -1;
-  return 0;
-}
+  getStatusKey: (score, stage) => {
+    const s = {'Initial Discovery':'Discovery','Initial Demo':'Demo','Deep Dive Discovery':'DeepDiscovery','Deep Dive Demo':'DeepDemo','Trial':'Trial','Solution Validation':'Validation'}[stage]||'Demo';
+    return `${s}_${score>=0?'NotRisky':score>=-100?'Risky':'VeryRisky'}`;
+  },
 
-function computeTabScore(tabKey) {
-  const uc = getUC();
-  return TABS[tabKey].rows.reduce((sum, row, i) => {
-    const ans = answers[tabKey][i] !== undefined ? answers[tabKey][i] : "Don't Know";
-    return sum + (row.w[uc] || 0) * scoreAnswer(ans, row.type);
-  }, 0);
-}
+  getRiskColor: (score) => {
+    return score >= 0 ? 'green' : score >= -100 ? 'amber' : 'red';
+  },
 
-function getStatusKey(score, stage) {
-  const s = {'Initial Discovery':'Discovery','Initial Demo':'Demo','Deep Dive Discovery':'DeepDiscovery','Deep Dive Demo':'DeepDemo','Trial':'Trial','Solution Validation':'Validation'}[stage]||'Demo';
-  return `${s}_${score>=0?'NotRisky':score>=-100?'Risky':'VeryRisky'}`;
-}
-function getRisk(score)  { return score >= 0 ? 'green' : score >= -100 ? 'amber' : 'red'; }
-function getLabel(score) {
-  if (score >= 0)    return ['Not Risky','Go Ahead!'];
-  if (score >= -100) return ['Risky','Discuss with Managers'];
-  return ['Very Risky','Discuss with Tommy / Laura / Des'];
-}
+  getRiskLabel: (score) => {
+    if (score >= 0)    return ['Not Risky','Go Ahead!'];
+    if (score >= -100) return ['Risky','Discuss with Managers'];
+    return ['Very Risky','Discuss with Tommy / Laura / Des'];
+  }
+};
 
-function switchTab(tabKey) {
-  currentTab = tabKey;
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-'+tabKey).classList.add('active');
-  renderRows(); recompute();
-}
+/**
+ * ==========================================
+ * MODULE 4: UI RENDERING & APP CONTROLLER
+ * ==========================================
+ */
+const App = {
+  switchTab: (tabKey) => {
+    State.currentTab = tabKey;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tabKey).classList.add('active');
+    App.renderRows(); 
+    App.recompute();
+  },
 
-function renderRows() {
-  const uc = getUC(), rows = TABS[currentTab].rows, ans = answers[currentTab];
-  const groups = [];
-  rows.forEach((row, i) => {
-    const last = groups[groups.length-1];
-    if (!last || last.cat !== row.cat) groups.push({cat:row.cat, items:[]});
-    groups[groups.length-1].items.push({row,i});
-  });
-  let html = '';
-  groups.forEach(g => {
-    html += `<div class="category-group"><div class="category-header">${g.cat}</div>`;
-    g.items.forEach(({row,i}) => {
-      const answer = ans[i] !== undefined ? ans[i] : "Don't Know";
-      const w = row.w[uc] || 0;
-      const s = scoreAnswer(answer, row.type);
-      const ws = w * s;
-      const wsClass = ws > 0 ? 'pos' : ws < 0 ? 'neg' : 'zero';
-      const selClass = answer==='Critical'?'critical':answer==='Not Needed'?'not-needed':answer==='Nice-to-Have'?'nice':'';
-      const opts = (row.type==='pain' ? ["Don't Know","Yes","No"] : ["Don't Know","Critical","Not Needed","Nice-to-Have"])
-        .map(o=>`<option value="${o}"${answer===o?' selected':''}>${o}</option>`).join('');
-      html += `<div class="score-row">
-        <div class="row-question">${row.q}</div>
-        <div class="row-answer"><select class="${selClass}" onchange="setAnswer(${i},this.value)">${opts}</select></div>
-        <div class="row-weight">${w>0?w:'—'}</div>
-        <div class="row-wscore ${wsClass}">${ws!==0?(ws>0?'+':'')+ws:'—'}</div>
-      </div>`;
+  handleUseCaseChange: () => {
+    App.renderRows();
+    App.recompute();
+  },
+
+  handleAnswerChange: (index, value) => {
+    State.setAnswer(index, value);
+    App.renderRows();
+    App.recompute();
+  },
+
+  renderRows: () => {
+    const uc = State.getUseCase();
+    const rows = DataStore.TABS[State.currentTab].rows;
+    const ans = State.answers[State.currentTab];
+    const groups = [];
+    
+    rows.forEach((row, i) => {
+      const last = groups[groups.length-1];
+      if (!last || last.cat !== row.cat) groups.push({cat:row.cat, items:[]});
+      groups[groups.length-1].items.push({row,i});
     });
-    html += '</div>';
-  });
-  document.getElementById('rowsContainer').innerHTML = html;
-}
-
-function setAnswer(i, value) {
-  answers[currentTab][i] = value;
-  renderRows(); recompute();
-}
-
-function recompute() {
-  const uc = getUC(), stage = getStage();
-  const score = computeTabScore(currentTab);
-  const rows = TABS[currentTab].rows;
-
-  // Pills for all tabs
-  ['employee','customer','member'].forEach(t => {
-    const s = computeTabScore(t);
-    const el = document.getElementById('pill-'+t);
-    el.textContent = s;
-    el.style.color = s>=0?'var(--green)':s>=-100?'var(--amber)':'var(--red)';
-  });
-
-  // Meter
-  const min = rows.reduce((a,r)=>a+(r.w[uc]||0)*-3,0);
-  const max = rows.reduce((a,r)=>a+(r.w[uc]||0)*1,0);
-  const pct = ((score-min)/(max-min||1))*100;
-  const cv = score>=0?'var(--green)':score>=-100?'var(--amber)':'var(--red)';
-  document.getElementById('scoreDisplay').textContent = score;
-  document.getElementById('scoreDisplay').style.color = cv;
-  document.getElementById('rangeDisplay').textContent = `${min} → ${max}`;
-  document.getElementById('meterFill').style.cssText = `width:${Math.max(2,pct)}%;background:${cv}`;
-
-  // Status
-  const [rLabel, rSub] = getLabel(score);
-  const color = getRisk(score);
-  const sb = document.getElementById('statusBlock');
-  sb.className = `status-badge ${color}`;
-  sb.style.cssText = 'width:100%;justify-content:flex-start;gap:10px;padding:12px 14px;';
-  document.getElementById('statusTitle').textContent = rLabel;
-  document.getElementById('statusSub').textContent = rSub;
-  document.getElementById('globalStatus').className = `status-badge ${color}`;
-  document.getElementById('globalStatus').innerHTML = `<div class="status-dot"></div><span>${rLabel}</span>`;
-
-  // Next steps
-  const key = getStatusKey(score, stage);
-  const steps = NEXT_STEPS[key] || [];
-  document.getElementById('nextStepsList').innerHTML = steps.length
-    ? steps.map((s,i)=>`<div class="next-step-item"><span class="step-num">${String(i+1).padStart(2,'0')}</span><span>${s}</span></div>`).join('')
-    : `<div class="next-step-item" style="color:var(--muted)"><span class="step-num">—</span><span>Complete assessment to see actions</span></div>`;
-
-  // Breakdown
-  const catScores = {};
-  rows.forEach((row,i) => {
-    const a = answers[currentTab][i] !== undefined ? answers[currentTab][i] : "Don't Know";
-    catScores[row.cat] = (catScores[row.cat]||0) + (row.w[uc]||0)*scoreAnswer(a,row.type);
-  });
-  document.getElementById('breakdownGrid').innerHTML = Object.entries(catScores)
-    .filter(([,v])=>v!==0).sort(([,a],[,b])=>a-b)
-    .map(([cat,val])=>`<div class="breakdown-row"><span class="breakdown-cat">${cat}</span><span class="breakdown-val" style="color:${val>=0?'var(--green)':'var(--red)'}">${val>0?'+':''}${val}</span></div>`).join('')
-    || `<div style="color:var(--muted);font-size:12px">No scored items yet</div>`;
-}
-
-function exportExcel() {
-  const wb = XLSX.utils.book_new();
-  const stage=getStage(), uc=getUC();
-  const ucLabel={I:'Internal',E:'External',B:'Both'}[uc];
-  const name=document.getElementById('prospectName').value||'Prospect';
-  const learners=document.getElementById('learnerCount').value||'';
-  Object.entries(TABS).forEach(([tabKey,tab])=>{
-    const rows=tab.rows, ans=answers[tabKey];
-    const score=computeTabScore(tabKey);
-    const [rLabel]=getLabel(score);
-    const steps=NEXT_STEPS[getStatusKey(score,stage)]||[];
-    const data=[
-      [`LearnUpon Complexity Scorecard — ${tab.label}`],
-      [`Prospect: ${name}`,'',`Learner Count: ${learners}`,'',`Use Case: ${ucLabel}`,'',`Stage: ${stage}`],
-      [],
-      ['Category','Requirement / Feature','Assessment','Weighting','Score','Weighted Score'],
-    ];
-    rows.forEach((row,i)=>{
-      const answer=ans[i]!==undefined?ans[i]:"Don't Know";
-      const w=row.w[uc]||0, s=scoreAnswer(answer,row.type);
-      data.push([row.cat,row.q,answer,w,s,w*s]);
+    
+    let html = '';
+    groups.forEach(g => {
+      html += `<div class="category-group"><div class="category-header">${g.cat}</div>`;
+      g.items.forEach(({row,i}) => {
+        const answer = ans[i] !== undefined ? ans[i] : "Don't Know";
+        const w = row.w[uc] || 0;
+        const s = Logic.scoreAnswer(answer, row.type);
+        const ws = w * s;
+        const wsClass = ws > 0 ? 'pos' : ws < 0 ? 'neg' : 'zero';
+        const selClass = answer==='Critical'?'critical':answer==='Not Needed'?'not-needed':answer==='Nice-to-Have'?'nice':'';
+        const opts = (row.type==='pain' ? ["Don't Know","Yes","No"] : ["Don't Know","Critical","Not Needed","Nice-to-Have"])
+          .map(o=>`<option value="${o}"${answer===o?' selected':''}>${o}</option>`).join('');
+        
+        html += `<div class="score-row">
+          <div class="row-question">${row.q}</div>
+          <div class="row-answer"><select class="${selClass}" onchange="App.handleAnswerChange(${i},this.value)">${opts}</select></div>
+          <div class="row-weight">${w>0?w:'—'}</div>
+          <div class="row-wscore ${wsClass}">${ws!==0?(ws>0?'+':'')+ws:'—'}</div>
+        </div>`;
+      });
+      html += '</div>';
     });
-    data.push([],[,'','','','TOTAL SCORE',score],[,'','','','STATUS',rLabel],[],['Suggested Next Steps']);
-    steps.forEach((s,i)=>data.push([`${i+1}.`,s]));
-    const ws=XLSX.utils.aoa_to_sheet(data);
-    ws['!cols']=[{wch:20},{wch:55},{wch:15},{wch:12},{wch:8},{wch:15}];
-    XLSX.utils.book_append_sheet(wb,ws,tab.label.substring(0,31));
-  });
-  XLSX.writeFile(wb,`LU_Scorecard_${name.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.xlsx`);
-  showToast('Exported successfully');
-}
+    document.getElementById('rowsContainer').innerHTML = html;
+  },
 
-function showToast(msg) {
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2500);
-}
+  recompute: () => {
+    const uc = State.getUseCase();
+    const stage = State.getDealStage();
+    const score = Logic.computeTabScore(State.currentTab);
+    const rows = DataStore.TABS[State.currentTab].rows;
 
-renderRows(); recompute();
+    // 1. Pills for all tabs
+    ['employee','customer','member'].forEach(t => {
+      const s = Logic.computeTabScore(t);
+      const el = document.getElementById('pill-'+t);
+      el.textContent = s;
+      el.style.color = s>=0?'var(--green)':s>=-100?'var(--amber)':'var(--red)';
+    });
+
+    // 2. Meter
+    const min = rows.reduce((a,r) => a+(r.w[uc]||0)*-3, 0);
+    const max = rows.reduce((a,r) => a+(r.w[uc]||0)*1, 0);
+    const pct = ((score-min)/(max-min||1))*100;
+    const cv = score>=0?'var(--green)':score>=-100?'var(--amber)':'var(--red)';
+    document.getElementById('scoreDisplay').textContent = score;
+    document.getElementById('scoreDisplay').style.color = cv;
+    document.getElementById('rangeDisplay').textContent = `${min} → ${max}`;
+    document.getElementById('meterFill').style.cssText = `width:${Math.max(2,pct)}%;background:${cv}`;
+
+    // 3. Status
+    const [rLabel, rSub] = Logic.getRiskLabel(score);
+    const color = Logic.getRiskColor(score);
+    const sb = document.getElementById('statusBlock');
+    sb.className = `status-badge ${color}`;
+    document.getElementById('statusTitle').textContent = rLabel;
+    document.getElementById('statusSub').textContent = rSub;
+    document.getElementById('globalStatus').className = `status-badge ${color}`;
+    document.getElementById('globalStatus').innerHTML = `<div class="status-dot"></div><span>${rLabel}</span>`;
+
+    // 4. Next steps
+    const key = Logic.getStatusKey(score, stage);
+    const steps = DataStore.NEXT_STEPS[key] || [];
+    document.getElementById('nextStepsList').innerHTML = steps.length
+      ? steps.map((s,i)=>`<div class="next-step-item"><span class="step-num">${String(i+1).padStart(2,'0')}</span><span>${s}</span></div>`).join('')
+      : `<div class="next-step-item" style="color:var(--muted)"><span class="step-num">—</span><span>Complete assessment to see actions</span></div>`;
+
+    // 5. Breakdown Categories
+    const catScores = {};
+    rows.forEach((row,i) => {
+      const a = State.answers[State.currentTab][i] !== undefined ? State.answers[State.currentTab][i] : "Don't Know";
+      catScores[row.cat] = (catScores[row.cat]||0) + (row.w[uc]||0) * Logic.scoreAnswer(a,row.type);
+    });
+    
+    document.getElementById('breakdownGrid').innerHTML = Object.entries(catScores)
+      .filter(([,v])=>v!==0).sort(([,a],[,b])=>a-b)
+      .map(([cat,val])=>`<div class="breakdown-row"><span class="breakdown-cat">${cat}</span><span class="breakdown-val" style="color:${val>=0?'var(--green)':'var(--red)'}">${val>0?'+':''}${val}</span></div>`).join('')
+      || `<div style="color:var(--muted);font-size:12px">No scored items yet</div>`;
+  },
+
+  exportExcel: () => {
+    const wb = XLSX.utils.book_new();
+    const stage = State.getDealStage();
+    const uc = State.getUseCase();
+    const ucLabel = {I:'Internal',E:'External',B:'Both'}[uc];
+    const name = document.getElementById('prospectName').value || 'Prospect';
+    const learners = document.getElementById('learnerCount').value || '';
+    
+    Object.entries(DataStore.TABS).forEach(([tabKey, tab]) => {
+      const rows = tab.rows;
+      const ans = State.answers[tabKey];
+      const score = Logic.computeTabScore(tabKey);
+      const [rLabel] = Logic.getRiskLabel(score);
+      const steps = DataStore.NEXT_STEPS[Logic.getStatusKey(score, stage)] || [];
+      
+      const data = [
+        [`LearnUpon Complexity Scorecard — ${tab.label}`],
+        [`Prospect: ${name}`,'',`Learner Count: ${learners}`,'',`Use Case: ${ucLabel}`,'',`Stage: ${stage}`],
+        [],
+        ['Category','Requirement / Feature','Assessment','Weighting','Score','Weighted Score'],
+      ];
+      
+      rows.forEach((row, i) => {
+        const answer = ans[i] !== undefined ? ans[i] : "Don't Know";
+        const w = row.w[uc] || 0;
+        const s = Logic.scoreAnswer(answer, row.type);
+        data.push([row.cat, row.q, answer, w, s, w*s]);
+      });
+      
+      data.push([],[,'','','','TOTAL SCORE',score],[,'','','','STATUS',rLabel],[],['Suggested Next Steps']);
+      steps.forEach((s, i) => data.push([`${i+1}.`, s]));
+      
+      const ws = XLSX.utils.aoa_to_sheet(data);
+      ws['!cols'] = [{wch:20},{wch:55},{wch:15},{wch:12},{wch:8},{wch:15}];
+      XLSX.utils.book_append_sheet(wb, ws, tab.label.substring(0,31));
+    });
+    
+    XLSX.writeFile(wb, `LU_Scorecard_${name.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.xlsx`);
+    App.showToast('Exported successfully');
+  },
+
+  showToast: (msg) => {
+    const t = document.getElementById('toast');
+    t.textContent = msg; 
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+  }
+};
+
+/**
+ * ==========================================
+ * MODULE 5: INITIALIZATION
+ * ==========================================
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  App.renderRows(); 
+  App.recompute();
+});
 </script>
 </body>
 </html>
