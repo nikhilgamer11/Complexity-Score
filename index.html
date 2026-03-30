@@ -3,1226 +3,1065 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LearnUpon · Deal Complexity</title>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<title>LearnUpon · Deal Complexity Scorecard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:       #0d0d0d;
-  --surface:  #161616;
-  --surface2: #1e1e1e;
-  --surface3: #262626;
-  --border:   #2e2e2e;
-  --text:     #f0f0f0;
-  --muted:    #6a6a6a;
-  --muted2:   #444;
-  --lime:     #a8e63d;
-  --lime-dim: rgba(168,230,61,0.12);
-  --orange:   #ff6b1a;
-  --orange-dim: rgba(255,107,26,0.12);
-  --white:    #ffffff;
-  --white-dim: rgba(255,255,255,0.08);
-  --red:      #ff3b3b;
-  --red-dim:  rgba(255,59,59,0.12);
-  --radius:   16px;
-  --radius-sm: 10px;
+  --bg: #f9f8f5;
+  --bg2: #eceae3;
+  --card: #ffffff;
+  --border: #dddad2;
+  --text: #1a1916;
+  --muted: #7a7770;
+  --lu-orange: #ff5a1f;
+  --lu-orange-light: rgba(255,90,31,0.1);
+  --green: #16a34a;
+  --green-bg: #dcfce7;
+  --amber: #d97706;
+  --amber-bg: #fef3c7;
+  --red: #dc2626;
+  --red-bg: #fee2e2;
+  --lu-blue: #3b82f6;
+  --lu-blue-dim: rgba(59,130,246,0.12);
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+  --radius: 14px;
+  --radius-sm: 10px;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;overflow:hidden;}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;display:flex;}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-x: hidden;
+  display: flex;
+}
 
 /* ── SIDEBAR ── */
-.sidebar{
-  width:68px;flex-shrink:0;
-  background:var(--surface);
-  border-right:1px solid var(--border);
-  display:flex;flex-direction:column;align-items:center;
-  padding:20px 0;gap:6px;
-  z-index:10;
+.sidebar {
+  width: 68px; flex-shrink: 0;
+  background: var(--card); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 20px 0; gap: 8px; z-index: 10;
 }
-.sidebar-logo{
-  width:40px;height:40px;border-radius:50%;
-  background:var(--lime);
-  display:flex;align-items:center;justify-content:center;
-  margin-bottom:14px;flex-shrink:0;
+.sidebar-logo {
+  width: 40px; height: 40px; border-radius: 9px;
+  background: var(--lu-orange);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px; flex-shrink: 0;
 }
-.sidebar-logo svg{width:22px;height:22px;}
-.sb-btn{
-  width:40px;height:40px;border-radius:50%;
-  background:transparent;border:none;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;color:var(--muted);transition:all 0.2s;
+.sidebar-logo svg { width: 22px; height: 22px; }
+.sb-btn {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: transparent; border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--muted); transition: all 0.2s;
 }
-.sb-btn:hover{background:var(--surface3);color:var(--text);}
-.sb-btn.active{background:var(--surface3);color:var(--lime);}
-.sb-btn svg{width:18px;height:18px;flex-shrink:0;}
-.sb-spacer{flex:1;}
-.sb-add{
-  width:40px;height:40px;border-radius:50%;
-  background:var(--surface3);border:1px solid var(--border);
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;color:var(--muted);transition:all 0.2s;
+.sb-btn:hover { background: var(--bg2); color: var(--text); }
+.sb-btn.active { background: var(--bg2); color: var(--lu-orange); }
+.sb-btn svg { width: 18px; height: 18px; flex-shrink: 0; stroke-width: 1.8; }
+.sb-spacer { flex: 1; }
+.sb-add {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--text); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--muted); transition: all 0.2s;
 }
-.sb-add:hover{background:var(--lime);color:#000;}
-.sb-add svg{width:16px;height:16px;}
+.sb-add:hover { background: var(--lu-orange); color: white; }
+.sb-add svg { width: 16px; height: 16px; stroke-width: 2.2; }
 
 /* ── MAIN ── */
-.main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
 
 /* ── TOP BAR ── */
-.topbar{
-  height:60px;flex-shrink:0;
-  background:var(--surface);border-bottom:1px solid var(--border);
-  display:flex;align-items:center;padding:0 24px;gap:10px;
+.topbar {
+  height: 60px; flex-shrink: 0;
+  background: rgba(249,248,245,0.9); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px; gap: 10px; z-index: 5;
 }
-.topbar-title{
-  font-family:'Bricolage Grotesque',sans-serif;
-  font-weight:800;font-size:13px;letter-spacing:1.5px;
-  text-transform:uppercase;color:var(--text);margin-right:8px;
-}
-.nav-chip{
-  padding:7px 14px;border-radius:20px;
-  background:var(--surface3);border:1px solid var(--border);
-  font-size:12px;font-weight:500;color:var(--muted);
-  cursor:pointer;transition:all 0.2s;white-space:nowrap;
-  display:flex;align-items:center;gap:6px;
-}
-.nav-chip:hover{border-color:var(--lime);color:var(--text);}
-.nav-chip.active{background:var(--lime-dim);border-color:var(--lime);color:var(--lime);}
-.nav-chip svg{width:13px;height:13px;}
-.topbar-spacer{flex:1;}
-.filter-chip{
-  padding:6px 12px;border-radius:20px;
-  background:var(--surface3);border:1px solid var(--border);
-  font-size:12px;color:var(--muted);cursor:pointer;
-  transition:all 0.2s;white-space:nowrap;
-  display:flex;align-items:center;gap:5px;
-}
-.filter-chip:hover{border-color:var(--border);color:var(--text);}
-.filter-chip strong{color:var(--text);font-weight:600;}
-.filter-chip .chevron{color:var(--muted);font-size:10px;}
-.topbar-user{display:flex;align-items:center;gap:8px;margin-left:8px;}
-.user-avatar{width:32px;height:32px;border-radius:50%;background:var(--lime);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#000;flex-shrink:0;}
+.logo-text { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 17px; letter-spacing: -0.5px; }
+.logo-text span { color: var(--lu-orange); }
+.logo-badge { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; border: 1px solid var(--border); border-radius: 20px; padding: 2px 8px; margin-left: 4px; }
+.topbar-spacer { flex: 1; }
+.filter-chip { display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; background: var(--bg2); color: var(--muted); font-size: 13px; }
+.filter-chip strong { color: var(--text); font-weight: 600; }
+.filter-chip .chevron { color: var(--muted); font-size: 10px; }
+.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--lu-orange); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: white; flex-shrink: 0; }
 
 /* ── CONTENT AREA ── */
-.content{
-  flex:1;overflow:hidden;
-  display:flex;flex-direction:column;
-}
-.page-header{
-  padding:20px 24px 0;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.page-title{
-  font-family:'Bricolage Grotesque',sans-serif;
-  font-weight:800;font-size:26px;letter-spacing:-0.5px;
-  text-transform:uppercase;
-}
-.page-sub{font-size:13px;color:var(--muted);margin-top:2px;}
+.content { flex: 1; overflow: hidden; display: flex; flex-direction: column; position: relative; }
 
-/* ── WIZARD STEPS (top) ── */
-.wizard-steps{
-  display:flex;align-items:center;gap:0;
-  padding:16px 24px 0;
+/* Massive SAI branding (LearnUpon style) */
+.lu-massive-brand {
+  position: absolute; top: 12%; left: -5%;
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 160px; font-weight: 800; letter-spacing: -10px;
+  color: rgba(0,0,0,0.03); pointer-events: none; z-index: 1; line-height: 1;
 }
-.wstep{display:flex;align-items:center;}
-.wstep-inner{display:flex;flex-direction:column;align-items:center;gap:4px;}
-.wdot{
-  width:28px;height:28px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-family:'DM Mono',monospace;font-size:11px;font-weight:500;
-  border:1.5px solid var(--border);color:var(--muted);background:var(--surface2);
-  transition:all 0.3s;
+
+/* ── WIZARD PROGRESS ── */
+.progress-bar {
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px 24px 0; gap: 0; z-index: 2;
 }
-.wdot.active{border-color:var(--lime);background:var(--lime);color:#000;}
-.wdot.done{border-color:var(--lime);background:transparent;color:var(--lime);}
-.wlabel{font-size:10px;color:var(--muted);white-space:nowrap;letter-spacing:0.5px;}
-.wline{width:36px;height:1.5px;background:var(--border);margin:0 6px;margin-bottom:14px;transition:background 0.3s;}
-.wline.done{background:var(--lime);}
+.step-item { display: flex; align-items: center; }
+.step-dot {
+  width: 30px; height: 30px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500;
+  border: 2px solid var(--border); background: var(--card); color: var(--muted);
+  transition: all 0.3s; flex-shrink: 0; position: relative; z-index: 1;
+}
+.step-dot.active { border-color: var(--lu-orange); background: var(--lu-orange); color: white; }
+.step-dot.done { border-color: var(--green); background: var(--green); color: white; }
+.step-label { font-size: 11px; color: var(--muted); margin-top: 4px; text-align: center; white-space: nowrap; }
+.step-item-inner { display: flex; flex-direction: column; align-items: center; }
+.step-line { width: 40px; height: 2px; background: var(--border); margin: 0 4px; flex-shrink: 0; transition: background 0.3s; margin-bottom: 14px; }
+.step-line.done { background: var(--green); }
+
+/* ── CONTAINER ── */
+.container { flex: 1; overflow: hidden; display: flex; flex-direction: column; padding: 20px 24px; z-index: 2; }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; position: relative; min-height: 0; }
+.card-top { display: flex; align-items: center; justify-content: space-between; padding: 16px 18px 10px; flex-shrink: 0; }
+.card-title { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text); }
+.card-menu { color: var(--muted); font-size: 16px; cursor: pointer; letter-spacing: 1px; line-height: 1; }
 
 /* ── GRID ── */
-.grid{
-  flex:1;overflow:hidden;
-  display:grid;
-  grid-template-columns:1fr 1.4fr;
-  grid-template-rows:1fr 1fr;
-  gap:12px;
-  padding:16px 24px 20px;
-}
-
-/* ── CARD ── */
-.card{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius);overflow:hidden;
-  display:flex;flex-direction:column;
-  position:relative;min-height:0;
-}
-.card-top{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:16px 18px 10px;flex-shrink:0;
-}
-.card-title{
-  font-family:'Bricolage Grotesque',sans-serif;
-  font-weight:800;font-size:13px;letter-spacing:1.5px;
-  text-transform:uppercase;color:var(--text);
-}
-.card-menu{color:var(--muted);font-size:16px;cursor:pointer;letter-spacing:1px;line-height:1;}
-.card-body{flex:1;overflow-y:auto;padding:0 18px 14px;min-height:0;}
-.card-body::-webkit-scrollbar{width:3px;}
-.card-body::-webkit-scrollbar-track{background:transparent;}
-.card-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
-.card-footer{padding:10px 18px;border-top:1px solid var(--border);display:flex;align-items:center;gap:16px;flex-shrink:0;}
-.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);}
-.legend-dot{width:7px;height:7px;border-radius:50%;}
+.grid { flex: 1; overflow: hidden; display: grid; gap: 12px; }
 
 /* ── STEP PANELS ── */
-.step-panel{display:none;}
-.step-panel.active{display:flex;flex-direction:column;height:100%;}
+.step-panel { display: none; height: 100%; }
+.step-panel.active { display: grid; animation: fadein 0.3s ease both; }
 
-/* ══════════════════════════════════════
-   STEP 1 — two cards
-   ══════════════════════════════════════ */
-#s1-left{grid-column:1;grid-row:1 / 3;}
-#s1-right{grid-column:2;grid-row:1 / 3;}
+/* ═══ STEP 1 — Bento ═══ */
+#step1 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+#s1-left { grid-column: 1; grid-row: 1 / 3; }
+#s1-right { grid-column: 2; grid-row: 1 / 3; }
 
-/* Input fields */
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
-.field-row.single{grid-template-columns:1fr;}
-.field{display:flex;flex-direction:column;gap:4px;}
-.field label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;font-family:'DM Mono',monospace;}
-.field input,.field select{
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:var(--radius-sm);padding:9px 12px;
-  color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;
-  outline:none;transition:border-color 0.2s;width:100%;
-  -webkit-appearance:none;
+/* Inputs */
+.card-body { flex: 1; overflow-y: auto; padding: 0 18px 14px; min-height: 0; }
+.card-body::-webkit-scrollbar { width: 3px; }
+.card-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.field-row.single { grid-template-columns: 1fr; }
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.8px; font-family: 'DM Mono', monospace; }
+.field input, .field select { background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s, box-shadow 0.2s; width: 100%; -webkit-appearance: none; }
+.field input:focus, .field select:focus { border-color: var(--lu-orange); box-shadow: 0 0 0 3px var(--lu-orange-light); }
+.field select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%237a7770' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; cursor: pointer; }
+
+/* Deal Cards */
+.deal-grid { display: grid; grid-template-columns: 1fr; gap: 10px; padding: 4px 0; }
+.deal-card { border: 2px solid var(--border); border-radius: var(--radius-sm); padding: 14px 16px; cursor: pointer; transition: all 0.2s; background: var(--bg); display: flex; align-items: center; gap: 14px; }
+.deal-card:hover { border-color: var(--lu-orange); background: var(--lu-orange-light); }
+.deal-card.selected { border-color: var(--lu-orange); background: var(--lu-orange-light); }
+.deal-icon { width: 34px; height: 34px; border-radius: 9px; background: var(--bg2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
+.deal-icon svg { width: 16px; height: 16px; color: var(--muted); }
+.deal-card.selected .deal-icon { background: var(--lu-orange); color: white; }
+.deal-name { font-weight: 700; font-size: 14px; color: var(--text); }
+.deal-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.deal-check { margin-left: auto; width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.deal-card.selected .deal-check { background: var(--lu-orange); border-color: var(--lu-orange); }
+.deal-card.selected .deal-check::after { content: '✓'; display: block; font-size: 10px; color: white; font-weight: 700; transform: translateY(-0.5px); }
+.also-row { display: flex; align-items: center; gap: 8px; padding: 10px 0 0; font-size: 12px; color: var(--muted); }
+.also-row input[type=checkbox] { width: 14px; height: 14px; accent-color: var(--lu-orange); cursor: pointer; }
+.also-row label { cursor: pointer; }
+.also-row strong { color: var(--text); }
+
+/* Buttons & Footer */
+.btn { padding: 8px 18px; border-radius: 8px; border: none; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; }
+.btn-lime { background: var(--lu-orange); color: white; }
+.btn-lime:hover { background: #e84d15; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,90,31,0.3); }
+.btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.btn-ghost:hover { border-color: var(--lu-orange); color: var(--lu-orange); }
+.btn-disabled { opacity: 0.35; pointer-events: none; }
+.btn svg { width: 13px; height: 13px; stroke-width: 2.2; }
+
+/* ═══ STEP 2 — Scoring Bento ═══ */
+#step2 { grid-template-columns: 1fr 1.3fr; grid-template-rows: 1fr 1fr; }
+#s2-score { grid-column: 1; grid-row: 1; }
+#s2-form { grid-column: 2; grid-row: 1 / 3; padding-bottom: 56px; }
+#s2-steps { grid-column: 1; grid-row: 2; }
+
+/* Score & Meter (off-white lolipop style) */
+.score-hero { padding: 8px 18px 14px; display: flex; align-items: flex-end; gap: 12px; }
+.score-big { font-family: 'Bricolage Grotesque', sans-serif; font-size: 56px; font-weight: 800; line-height: 1; color: var(--muted); }
+.score-info { padding-bottom: 6px; }
+.score-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; border: 1px solid; margin-bottom: 4px; }
+.score-badge.green { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+.score-badge.amber { background: var(--amber-bg); border-color: var(--amber); color: var(--amber); }
+.score-badge.red { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+.score-badge.neutral { background: var(--bg2); border-color: var(--border); color: var(--muted); }
+.score-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.score-stage { font-size: 11px; color: var(--muted); red: substage in red; }
+.red { color: var(--red); font-weight: 600; font-family: 'DM Mono', monospace; font-size: 10px; margin-left: 2px; }
+
+/* Meter lolipop style */
+.meter-wrap { padding: 0 18px 14px; }
+.meter-labels { display: flex; justify-content: space-between; font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-bottom: 6px; }
+.meter-track { height: 6px; background: var(--bg2); border-radius: 3px; overflow: visible; position: relative; }
+.meter-fill { height: 100%; border-radius: 3px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1), background 0.5s; position: relative; }
+.cat-bar-bubble { position: absolute; right: -12px; top: 50%; transform: translateY(-50%); width: 22px; height: 16px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 600; background: var(--lu-orange); color: white; }
+.score-hero.not_started .cat-bar-bubble { display: none; }
+.cat-bar-track .not_started { background: var(--muted) !important; color: white !important; }
+
+/* Category Lolliops */
+.cat-bars { padding: 0 18px 12px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; flex: 1; min-height: 0; }
+.cat-bar-row { display: flex; align-items: center; gap: 10px; }
+.cat-bar-label { font-size: 11px; color: var(--muted); width: 90px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; font-weight: 500; }
+.cat-bar-track-wrap { flex: 1; height: 4px; background: var(--bg2); border-radius: 2px; position: relative; overflow: visible; }
+.cat-bar-fill { height: 100%; border-radius: 2px; transition: width 0.5s, background 0.4s; position: relative; }
+.cat-bar-row.pos .cat-bar-fill { background: var(--lu-orange); }
+.cat-bar-row.neg .cat-bar-fill { background: var(--red); }
+.cat-bar-row.pos .cat-bar-bubble { background: var(--lu-orange); color: white; }
+.cat-bar-row.neg .cat-bar-bubble { background: var(--red); color: white; }
+.cat-bar-row.zero .cat-bar-fill { background: var(--bg2); }
+.cat-bar-row.zero .cat-bar-bubble { background: var(--bg2); color: var(--muted); }
+
+/* Next Steps timeline style */
+.steps-list { display: flex; flex-direction: column; gap: 4px; flex: 1; min-height: 0; overflow-y: auto; padding: 0 18px 12px; }
+.step-bar { display: flex; align-items: center; gap: 12px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+.step-bar:last-child { border-bottom: none; }
+.step-num { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); width: 22px; flex-shrink: 0; text-align: right; }
+.step-fill-wrap { flex: 1; height: 26px; background: var(--bg2); border-radius: var(--radius-sm); overflow: hidden; position: relative; border: 1px solid rgba(0,0,0,0.03); }
+.step-fill { height: 100%; border-radius: var(--radius-sm); display: flex; align-items: center; padding-left: 12px; font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; color: white; text-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+.step-fill.green { background: var(--green); }
+.step-fill.amber { background: var(--amber); }
+.step-fill.red { background: var(--red); }
+
+/* Scoring Form Tabs */
+.form-tabs { display: flex; gap: 5px; padding: 0 18px 12px; flex-shrink: 0; }
+.ftab { padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.ftab:hover { border-color: var(--lu-orange); color: var(--text); }
+.ftab.active { background: var(--lu-orange); border-color: var(--lu-orange); color: white; }
+.ftab-score { font-family: 'DM Mono', monospace; font-size: 10px; background: rgba(255,255,255,0.25); border-radius: 8px; padding: 1px 4px; }
+.colhead { display: grid; grid-template-columns: 1fr 150px 48px 70px; padding: 0 18px 8px; gap: 10px; flex-shrink: 0; font-family: 'DM Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); border-bottom: 1px solid var(--border); }
+.colhead.r { text-align: right; }
+.colhead-wt { text-align: right; }
+.colhead-ws { text-align: right; }
+
+/* Form Category Labels */
+.form-cat-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); font-family: 'DM Mono', monospace; padding: 10px 18px 6px; flex-shrink: 0; border-top: 1px solid var(--border); background: var(--card); }
+.form-cat-label:first-of-type { border-top: none; }
+
+/* Scoring Row */
+.srow { display: grid; grid-template-columns: 1fr 150px 48px 70px; padding: 10px 18px; gap: 10px; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.03); transition: background 0.1s; }
+.srow:hover { background: var(--bg); }
+.srow-q { font-size: 13px; color: var(--text); line-height: 1.4; }
+.srow-select select { padding: 6px 26px 6px 10px; font-size: 12px; border-radius: 8px; }
+.srow-ws.pos { color: var(--green); }
+.srow-ws.neg { color: var(--red); }
+.srow-ws.zero { color: var(--border); }
+
+/* Sticky footer Scoring */
+.sticky-footer { position: fixed; bottom: 0; left: 68px; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); border-top: 1px solid var(--border); padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; z-index: 50; box-shadow: 0 -4px 16px rgba(0,0,0,0.03); }
+.sfooter-score { display: flex; align-items: center; gap: 12px; }
+.sfooter-num { font-family: 'Bricolage Grotesque', sans-serif; font-size: 26px; font-weight: 800; line-height: 1; }
+.sfooter-label { font-size: 12px; color: var(--muted); }
+.sfooter-right { display: flex; gap: 10px; }
+
+/* ═══ STEP 3 — Results Bento ═══ */
+#step3 { grid-template-columns: 1fr 1fr; grid-template-rows: auto; }
+#s3-bento { grid-column: 1 / -1; display: grid; grid-template-columns: 280px 1fr 1fr; gap: 12px; }
+
+/* Hero Date style */
+.result-status { padding: 18px 18px 14px; position: relative; }
+.result-massive { font-family: 'Bricolage Grotesque', sans-serif; font-size: 72px; font-weight: 800; line-height: 1; margin-bottom: 12px; }
+.result-label { font-size: 13px; color: var(--muted); position: absolute; top: 12px; left: 18px; text-transform: uppercase; letter-spacing: 1px; font-family: 'DM Mono', monospace; }
+.subscript { color: var(--red); font-weight: 700; font-family: 'DM Mono', monospace; font-size: 13px; margin-left: 3px; top: 10px; }
+.risk-stage { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+
+/* AVatar Cluster style */
+.avatar-cluster { display: flex; align-items: center; gap: -8px; margin-bottom: 20px; }
+.lu-avatar { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--card); background: #eee; flex-shrink: 0; }
+.lu-avatar-dot { margin-left: auto; color: var(--red); font-size: 16px; line-height: 1; font-weight: 800; transform: translate(5px, 2px); }
+
+/* Dial theme on Results Card (Total Score) */
+.dial-score-card { border-radius: 50%; width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; background: var(--bg); border: 4px solid var(--border); position: relative; margin: 10px 0 16px; }
+.dial-massive { font-family: 'Bricolage Grotesque', sans-serif; font-size: 52px; font-weight: 800; line-height: 1; }
+.dial-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); font-family: 'DM Mono', monospace; position: absolute; top: 15px; }
+
+/* Urgency Bento (Big Yellow from SAI phone) */
+.urgency-bento { padding: 20px; border-radius: var(--radius); background: #facc15; border: 1px solid #d9a008; color: #1a1916; grid-column: 1 / 2; grid-row: 1 / 3; display: flex; flex-direction: column; gap: 14px; }
+.ub-badge-row { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 14px; }
+.ub-icon { width: 18px; height: 18px; }
+.ub-huge { font-family: 'Bricolage Grotesque', sans-serif; font-size: 40px; font-weight: 800; line-height: 1; }
+.ub-huge span { color: var(--red); font-size: 13px; font-family: 'DM Mono', monospace; margin-left: 2px; }
+.ub-msg { font-size: 13px; line-height: 1.5; font-weight: 500; }
+
+/* Phone Component from SAI */
+.sai-phone {
+  grid-column: 2; grid-row: 2; width: 320px; height: 640px;
+  background: black; border-radius: 40px; padding: 12px;
+  position: relative; box-shadow: var(--shadow);
+  border: 3px solid #2e2e2e; margin-left: auto;
 }
-.field input:focus,.field select:focus{border-color:var(--lime);}
-.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%236a6a6a' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;cursor:pointer;}
-.field select option{background:#1e1e1e;}
+.sai-notch { position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 120px; height: 28px; background: black; border-bottom-left-radius: 14px; border-bottom-right-radius: 14px; z-index: 10; }
+.sai-screen { width: 100%; height: 100%; background: #f9f8f5; border-radius: 30px; overflow: hidden; position: relative; padding: 20px; color: #1a1916; }
+.sai-s-top { font-size: 12px; font-weight: 700; display: flex; justify-content: space-between; color: #1a1916; margin-bottom: 24px; }
+.sai-s-content { font-family: 'Bricolage Grotesque', sans-serif; font-size: 26px; font-weight: 800; letter-spacing: -1px; line-height: 1; }
+.sai-s-yellow { background: #facc15; border-radius: 14px; padding: 16px; margin: 16px 0; color: #1a1916; font-size: 13px; font-weight: 500; }
+.sai-s-yellow strong { font-size: 30px; line-height: 1; font-weight: 800; display: block; margin-top: 6px; }
 
-/* Deal type cards */
-.deal-grid{display:grid;grid-template-columns:1fr;gap:8px;padding:4px 0;}
-.deal-card{
-  border:1.5px solid var(--border);border-radius:var(--radius-sm);
-  padding:14px 16px;cursor:pointer;transition:all 0.2s;
-  background:var(--surface2);display:flex;align-items:center;gap:14px;
-}
-.deal-card:hover{border-color:var(--lime);background:var(--lime-dim);}
-.deal-card.selected{border-color:var(--lime);background:var(--lime-dim);}
-.deal-icon{
-  width:34px;height:34px;border-radius:8px;
-  background:var(--surface3);display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;transition:background 0.2s;
-}
-.deal-card.selected .deal-icon{background:var(--lime);}
-.deal-card.selected .deal-icon svg{color:#000;}
-.deal-icon svg{width:16px;height:16px;color:var(--muted);}
-.deal-info{}
-.deal-name{font-weight:600;font-size:13px;color:var(--text);}
-.deal-desc{font-size:11px;color:var(--muted);margin-top:2px;}
-.deal-check{margin-left:auto;width:18px;height:18px;border-radius:50%;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.deal-card.selected .deal-check{background:var(--lime);border-color:var(--lime);}
-.deal-card.selected .deal-check::after{content:'';display:block;width:6px;height:4px;border-left:1.5px solid #000;border-bottom:1.5px solid #000;transform:rotate(-45deg) translateY(-1px);}
+/* Mini Scores & Share bento */
+.mini-scores { grid-column: 2 / -1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; }
+.mini-score { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; display: flex; flex-direction: column; gap: 3px; }
+.ms-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); font-family: 'DM Mono', monospace; }
+.ms-num { font-family: 'Bricolage Grotesque', sans-serif; font-size: 24px; font-weight: 800; line-height: 1; }
+.ms-status { font-size: 11px; font-weight: 600; }
 
-.also-row{display:flex;align-items:center;gap:8px;padding:8px 0 0;font-size:12px;color:var(--muted);}
-.also-row input[type=checkbox]{width:14px;height:14px;accent-color:var(--lime);cursor:pointer;}
-.also-row label{cursor:pointer;}
-.also-row strong{color:var(--text);}
+.r-cat-bento { grid-column: 2 / -1; margin-bottom: 12px; }
+.r-steps-bento { grid-column: 2 / -1; }
 
-/* ══════════════════════════════════════
-   STEP 2 — scoring
-   ══════════════════════════════════════ */
-#s2-form{grid-column:1;grid-row:1 / 3;}
-#s2-score{grid-column:2;grid-row:1;}
-#s2-steps{grid-column:2;grid-row:2;}
+.share-bento { grid-column: 3; margin-top: 12px; }
+.msg-tabs { display: flex; gap: 5px; padding: 0 18px 10px; flex-shrink: 0; }
+.mtab { padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-size: 11px; cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif; }
+.mtab.active { background: var(--bg2); border-color: var(--border); color: var(--text); }
+.msg-out { flex: 1; min-height: 0; margin: 0 18px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; font-family: 'DM Mono', monospace; font-size: 12px; line-height: 1.6; color: var(--text); resize: none; overflow-y: auto; outline: none; transition: border-color 0.2s; }
+.msg-out:focus { border-color: var(--lu-orange); }
 
-/* Score number display */
-.score-hero{padding:8px 18px 16px;display:flex;align-items:flex-end;gap:10px;}
-.score-big{font-family:'Bricolage Grotesque',sans-serif;font-size:52px;font-weight:800;line-height:1;transition:color 0.4s;}
-.score-info{padding-bottom:6px;}
-.score-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid;margin-bottom:4px;}
-.score-badge.green{background:var(--lime-dim);border-color:var(--lime);color:var(--lime);}
-.score-badge.amber{background:var(--orange-dim);border-color:var(--orange);color:var(--orange);}
-.score-badge.red{background:var(--red-dim);border-color:var(--red);color:var(--red);}
-.score-badge.neutral{background:var(--white-dim);border-color:var(--border);color:var(--muted);}
-.score-badge-dot{width:6px;height:6px;border-radius:50%;background:currentColor;}
-.score-stage{font-size:11px;color:var(--muted);}
-
-/* Meter */
-.meter-wrap{padding:0 18px 14px;}
-.meter-labels{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:5px;}
-.meter-track{height:4px;background:var(--surface3);border-radius:2px;overflow:hidden;}
-.meter-fill{height:100%;border-radius:2px;transition:width 0.5s cubic-bezier(0.4,0,0.2,1),background 0.4s;}
-
-/* Category bar chart (lollipop-style from image) */
-.cat-bars{padding:0 18px 10px;display:flex;flex-direction:column;gap:6px;overflow-y:auto;flex:1;min-height:0;}
-.cat-bar-row{display:flex;align-items:center;gap:8px;}
-.cat-bar-label{font-size:10px;color:var(--muted);width:90px;flex-shrink:0;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;}
-.cat-bar-track{flex:1;height:6px;background:var(--surface3);border-radius:3px;position:relative;overflow:visible;}
-.cat-bar-fill{height:100%;border-radius:3px;transition:width 0.5s cubic-bezier(0.4,0,0.2,1),background 0.4s;position:relative;}
-.cat-bar-bubble{
-  position:absolute;right:-16px;top:50%;transform:translateY(-50%);
-  min-width:28px;height:18px;border-radius:9px;
-  display:flex;align-items:center;justify-content:center;
-  font-family:'DM Mono',monospace;font-size:10px;font-weight:500;
-  padding:0 5px;
-}
-.cat-bar-row.pos .cat-bar-fill{background:var(--lime);}
-.cat-bar-row.pos .cat-bar-bubble{background:var(--lime);color:#000;}
-.cat-bar-row.neg .cat-bar-fill{background:var(--orange);}
-.cat-bar-row.neg .cat-bar-bubble{background:var(--orange);color:#000;}
-.cat-bar-row.zero .cat-bar-fill{background:var(--surface3);}
-.cat-bar-row.zero .cat-bar-bubble{background:var(--surface3);color:var(--muted);}
-
-/* Next steps as horizontal bars (like the timeline in the image) */
-.steps-list{display:flex;flex-direction:column;gap:5px;flex:1;min-height:0;overflow-y:auto;}
-.step-bar{
-  display:flex;align-items:center;gap:10px;
-  padding:7px 0;border-bottom:1px solid var(--border);
-}
-.step-bar:last-child{border-bottom:none;}
-.step-num{
-  font-family:'DM Mono',monospace;font-size:10px;
-  color:var(--muted);width:18px;flex-shrink:0;text-align:right;
-}
-.step-fill-wrap{flex:1;height:22px;background:var(--surface3);border-radius:5px;overflow:hidden;position:relative;}
-.step-fill{
-  height:100%;border-radius:5px;
-  display:flex;align-items:center;padding-left:10px;
-  font-size:11px;font-weight:500;
-  white-space:nowrap;overflow:hidden;
-  animation:bar-grow 0.5s cubic-bezier(0.4,0,0.2,1) both;
-}
-@keyframes bar-grow{from{width:0!important}to{}}
-.step-fill.green{background:var(--lime);color:#000;}
-.step-fill.amber{background:var(--orange);color:#000;}
-.step-fill.red{background:var(--red);color:#fff;}
-
-/* Scoring form rows */
-.form-tabs{display:flex;gap:4px;padding:0 18px 10px;flex-shrink:0;}
-.ftab{
-  padding:5px 12px;border-radius:20px;border:1px solid var(--border);
-  background:transparent;color:var(--muted);font-size:11px;font-weight:500;
-  cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;
-  display:flex;align-items:center;gap:5px;white-space:nowrap;
-}
-.ftab:hover{border-color:var(--lime);color:var(--text);}
-.ftab.active{background:var(--lime);border-color:var(--lime);color:#000;}
-.ftab-score{font-family:'DM Mono',monospace;font-size:10px;background:rgba(0,0,0,0.2);border-radius:8px;padding:1px 4px;}
-
-.form-colhead{
-  display:grid;grid-template-columns:1fr 140px 44px 64px;
-  padding:0 18px 6px;gap:8px;flex-shrink:0;
-}
-.fch{font-family:'DM Mono',monospace;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--muted2);}
-.fch.r{text-align:right;}
-
-.cat-label{
-  font-size:9px;text-transform:uppercase;letter-spacing:1.2px;
-  color:var(--muted2);font-family:'DM Mono',monospace;
-  padding:6px 18px 4px;flex-shrink:0;
-  border-top:1px solid var(--border);
-  background:var(--surface);
-}
-.srow{
-  display:grid;grid-template-columns:1fr 140px 44px 64px;
-  padding:7px 18px;gap:8px;align-items:center;
-  border-bottom:1px solid rgba(46,46,46,0.5);transition:background 0.1s;
-}
-.srow:hover{background:var(--surface2);}
-.srow-q{font-size:12px;color:var(--text);line-height:1.35;}
-.srow-select select{
-  width:100%;background:var(--surface2);
-  border:1px solid var(--border);border-radius:6px;
-  padding:5px 22px 5px 8px;color:var(--text);
-  font-size:11px;font-family:'DM Sans',sans-serif;
-  outline:none;cursor:pointer;transition:border-color 0.2s;
-  -webkit-appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24' fill='none' stroke='%236a6a6a' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 7px center;
-}
-.srow-select select:focus{border-color:var(--lime);}
-.srow-select select.critical{border-color:var(--red);background-color:rgba(255,59,59,0.07);}
-.srow-select select.not-needed{border-color:var(--lime);}
-.srow-select select.nice{border-color:var(--orange);}
-.srow-w{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted);text-align:right;}
-.srow-ws{font-family:'DM Mono',monospace;font-size:12px;font-weight:600;text-align:right;}
-.srow-ws.pos{color:var(--lime);}
-.srow-ws.neg{color:var(--orange);}
-.srow-ws.zero{color:var(--muted2);}
-
-/* ══════════════════════════════════════
-   STEP 3 — results
-   ══════════════════════════════════════ */
-#s3-hero{grid-column:1;grid-row:1;}
-#s3-chart{grid-column:1;grid-row:2;}
-#s3-steps{grid-column:2;grid-row:1;}
-#s3-share{grid-column:2;grid-row:2;}
+/* Restart button bento card style */
+.restart-bento { grid-column: 3; border-color: var(--border) !important; color: var(--muted); cursor: pointer; text-align: center; }
+.restart-bento:hover { color: var(--red); border-color: var(--red) !important; background: var(--red-bg); }
 
 /* Confetti */
-.confetti-wrap{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
-.cpiece{position:absolute;width:7px;height:7px;border-radius:1px;animation:cfall 2.5s ease-out both;}
-@keyframes cfall{0%{transform:translateY(-10px) rotate(0);opacity:1;}100%{transform:translateY(300px) rotate(720deg);opacity:0;}}
-
-/* Result hero content */
-.result-status{padding:18px 18px 14px;}
-.result-score-row{display:flex;align-items:flex-end;gap:12px;margin-bottom:10px;}
-.result-big{font-family:'Bricolage Grotesque',sans-serif;font-size:56px;font-weight:800;line-height:1;}
-.result-right{}
-.result-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:13px;font-weight:700;border:1.5px solid;letter-spacing:0.3px;text-transform:uppercase;}
-.result-badge.green{background:var(--lime-dim);border-color:var(--lime);color:var(--lime);}
-.result-badge.amber{background:var(--orange-dim);border-color:var(--orange);color:var(--orange);}
-.result-badge.red{background:var(--red-dim);border-color:var(--red);color:var(--red);}
-.result-badge-dot{width:7px;height:7px;border-radius:50%;background:currentColor;}
-.result-action{font-size:12px;color:var(--muted);margin-top:4px;}
-
-.mini-scores{display:flex;flex-wrap:wrap;gap:6px;padding:0 18px 14px;}
-.mini-score{
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:8px;padding:8px 12px;
-  display:flex;flex-direction:column;gap:2px;flex:1;min-width:100px;
-}
-.ms-label{font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);font-family:'DM Mono',monospace;}
-.ms-num{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:800;}
-.ms-status{font-size:11px;font-weight:600;}
-
-/* Urgency banner */
-.urgency{margin:0 18px 12px;padding:10px 14px;border-radius:8px;font-size:12px;display:flex;gap:10px;align-items:flex-start;border:1px solid;}
-.urgency.amber{background:var(--orange-dim);border-color:rgba(255,107,26,0.3);color:var(--orange);}
-.urgency.red{background:var(--red-dim);border-color:rgba(255,59,59,0.3);color:var(--red);}
-.urgency-icon{flex-shrink:0;margin-top:1px;}
-.urgency-text strong{display:block;font-weight:600;margin-bottom:1px;}
-.urgency-text{color:var(--text);font-size:12px;}
-
-/* Share section */
-.msg-tabs{display:flex;gap:4px;padding:0 18px 10px;flex-shrink:0;}
-.mtab{padding:5px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;cursor:pointer;transition:all 0.2s;font-family:'DM Sans',sans-serif;}
-.mtab.active{background:var(--surface3);border-color:var(--border);color:var(--text);}
-.msg-out{flex:1;min-height:0;margin:0 18px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;font-family:'DM Mono',monospace;font-size:11px;line-height:1.6;color:var(--text);resize:none;overflow-y:auto;outline:none;transition:border-color 0.2s;}
-.msg-out:focus{border-color:var(--lime);}
-
-/* Sticky footer bar (Step 2) */
-.sticky-footer{
-  position:fixed;bottom:0;left:68px;right:0;
-  background:rgba(22,22,22,0.95);backdrop-filter:blur(12px);
-  border-top:1px solid var(--border);
-  padding:10px 24px;display:flex;align-items:center;justify-content:space-between;gap:12px;
-  z-index:50;
-}
-.sfooter-score{display:flex;align-items:center;gap:12px;}
-.sfooter-num{font-family:'Bricolage Grotesque',sans-serif;font-size:24px;font-weight:800;}
-.sfooter-label{font-size:11px;color:var(--muted);}
-.sfooter-right{display:flex;gap:8px;}
-
-/* Buttons */
-.btn{padding:8px 18px;border-radius:8px;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;}
-.btn-lime{background:var(--lime);color:#000;}
-.btn-lime:hover{background:#b8f040;transform:translateY(-1px);}
-.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border);}
-.btn-ghost:hover{border-color:var(--lime);color:var(--lime);}
-.btn-dark{background:var(--surface3);color:var(--text);border:1px solid var(--border);}
-.btn-dark:hover{border-color:var(--text);}
-.btn-sm{padding:6px 12px;font-size:12px;}
-.btn-disabled{opacity:0.35;pointer-events:none;}
-.btn svg{width:13px;height:13px;}
-
-/* Export row */
-.export-row{padding:12px 18px 14px;display:flex;flex-wrap:wrap;gap:8px;border-top:1px solid var(--border);flex-shrink:0;}
-.btn-sheets{background:#188038;color:#fff;border:none;}
-.btn-sheets:hover{background:#166c30;}
-.btn-copy{background:var(--surface3);color:var(--text);border:1px solid var(--border);}
-.btn-copy:hover{border-color:var(--lime);color:var(--lime);}
-.btn-restart{background:transparent;color:var(--muted);border:1px solid var(--border);}
-.btn-restart:hover{color:var(--orange);border-color:var(--orange);}
-
-/* Toast */
-.toast{position:fixed;bottom:70px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--surface3);color:var(--text);border:1px solid var(--border);border-radius:8px;padding:9px 16px;font-size:12px;z-index:9999;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.confetti-wrap { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 1; }
+.cpiece { position: absolute; width: 7px; height: 7px; border-radius: 1px; animation: cfall 2.5s ease-out both; }
+@keyframes cfall { 0% { transform: translateY(-10px) rotate(0); opacity: 1; } 100% { transform: translateY(300px) rotate(720deg); opacity: 0; } }
 
 /* Animations */
-.fadein{animation:fadein 0.3s ease;}
-@keyframes fadein{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadein { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Toast */
+.toast { position: fixed; bottom: 70px; left: 50%; transform: translateX(-50%) translateY(8px); background: var(--card); color: var(--text); border: 1px solid var(--border); border-radius: 10px; padding: 10px 18px; font-size: 13px; z-index: 9999; opacity: 0; transition: all 0.3s; pointer-events: none; white-space: nowrap; box-shadow: var(--shadow); }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
 
-<!-- SIDEBAR -->
 <nav class="sidebar">
-  <div class="sidebar-logo">
-    <svg viewBox="0 0 24 24" fill="none">
-      <path d="M12 3L4 7.5V12C4 16.4 7.4 20.5 12 21.5C16.6 20.5 20 16.4 20 12V7.5L12 3Z" fill="#000" fill-opacity="0.9"/>
-      <path d="M9 12L11 14L15 10" stroke="#a8e63d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </div>
-  <button class="sb-btn active" title="Scorecard">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
-  </button>
-  <button class="sb-btn" title="History">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
-  </button>
-  <button class="sb-btn" title="Team">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="7" r="3"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/><path d="M16 3.13a4 4 0 010 7.75"/><path d="M21 21v-2a4 4 0 00-3-3.87"/></svg>
-  </button>
-  <button class="sb-btn" title="Settings">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-  </button>
-  <div class="sb-spacer"></div>
-  <div class="sb-add" onclick="restart()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-  </div>
+  <div class="sidebar-logo">
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M12 3L4 7.5V12C4 16.4 7.4 20.5 12 21.5C16.6 20.5 20 16.4 20 12V7.5L12 3Z" fill="white" fill-opacity="0.9"/>
+      <path d="M9 12L11 14L15 10" stroke="#ff5a1f" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+  <button class="sb-btn active" id="sb-scorecard" title="Scorecard" onclick="navTo(1)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+  </button>
+  <button class="sb-btn" title="History">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="9"/></svg>
+  </button>
+  <button class="sb-btn" title="Settings">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+  </button>
+  <div class="sb-spacer"></div>
+  <div class="sb-add" title="New Assessment" onclick="restart()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  </div>
 </nav>
 
-<!-- MAIN -->
 <div class="main">
 
-  <!-- TOPBAR -->
-  <div class="topbar">
-    <span class="topbar-title">LearnUpon</span>
-    <button class="nav-chip active">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
-      Complexity Scorecard
-    </button>
-    <div class="topbar-spacer"></div>
-    <div class="filter-chip" id="fc-se"><span style="color:var(--muted);font-size:11px">SE:</span> <strong id="fc-se-val">—</strong> <span class="chevron">▾</span></div>
-    <div class="filter-chip" id="fc-stage"><span style="color:var(--muted);font-size:11px">Stage:</span> <strong id="fc-stage-val">—</strong> <span class="chevron">▾</span></div>
-    <div class="filter-chip" id="fc-uc"><span style="color:var(--muted);font-size:11px">Use Case:</span> <strong id="fc-uc-val">—</strong> <span class="chevron">▾</span></div>
-    <div class="topbar-user">
-      <div class="user-avatar" id="userAvatar">?</div>
-    </div>
-  </div>
+  <div class="topbar">
+    <span class="logo-text">Learn<span>Upon</span></span>
+    <span class="logo-badge">Work OS</span>
+    <div class="topbar-spacer"></div>
+    <div class="filter-chip" id="fc-se"><span style="color:var(--muted);font-size:11px">SE:</span> <strong id="fc-se-val">—</strong> <span class="chevron">▾</span></div>
+    <div class="filter-chip" id="fc-stage"><span style="color:var(--muted);font-size:11px">Stage:</span> <strong id="fc-stage-val">—</strong> <span class="chevron">▾</span></div>
+    <div class="filter-chip" id="fc-uc"><span style="color:var(--muted);font-size:11px">Derive:</span> <strong id="fc-uc-val">—</strong> <span class="chevron">▾</span></div>
+    <div class="user-avatar" id="userAvatar">?</div>
+  </div>
 
-  <!-- PAGE HEADER + WIZARD -->
-  <div class="page-header">
-    <div>
-      <div class="page-title" id="pageTitle">Deal Complexity</div>
-      <div class="page-sub" id="pageSub">Assess deal risk and get tailored next steps</div>
-    </div>
-  </div>
+  <div class="content">
+    <div class="lu-massive-brand">Learn Upon</div>
 
-  <!-- WIZARD STEPS -->
-  <div class="wizard-steps">
-    <div class="wstep"><div class="wstep-inner"><div class="wdot active" id="wd1">1</div><div class="wlabel">Details</div></div></div>
-    <div class="wline" id="wl1"></div>
-    <div class="wstep"><div class="wstep-inner"><div class="wdot" id="wd2">2</div><div class="wlabel">Deal Type</div></div></div>
-    <div class="wline" id="wl2"></div>
-    <div class="wstep"><div class="wstep-inner"><div class="wdot" id="wd3">3</div><div class="wlabel">Assess</div></div></div>
-    <div class="wline" id="wl3"></div>
-    <div class="wstep"><div class="wstep-inner"><div class="wdot" id="wd4">4</div><div class="wlabel">Results</div></div></div>
-  </div>
+    <div class="progress-bar" id="progressBar">
+      <div class="step-item"><div class="step-item-inner"><div class="wdot active" id="wd1">1</div><div class="wlabel">Details</div></div></div>
+      <div class="step-line" id="wl1"></div>
+      <div class="step-item"><div class="step-item-inner"><div class="wdot" id="wd2">2</div><div class="wlabel">Deal Type</div></div></div>
+      <div class="step-line" id="wl2"></div>
+      <div class="step-item"><div class="step-item-inner"><div class="wdot" id="wd3">3</div><div class="wlabel">Assess</div></div></div>
+      <div class="step-line" id="wl3"></div>
+      <div class="step-item"><div class="step-item-inner"><div class="wdot" id="wd4">4</div><div class="wlabel">Results</div></div></div>
+    </div>
 
-  <!-- CONTENT -->
-  <div class="content">
+    <div class="container">
 
-    <!-- ══ STEP 1 ══ -->
-    <div id="step1" class="grid fadein">
+      <div id="step1-panel" class="step-panel active fadein">
+        <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 12px">
+          
+          <div class="card" id="s1-left">
+            <div class="card-top"><span class="card-title">Prospect details</span><span class="card-menu">···</span></div>
+            <div class="card-body">
+              <div class="field-row">
+                <div class="field">
+                  <label>Your Name (SE)</label>
+                  <select id="seName" onchange="updateTopBar(); saveData();">
+                    <option value="">Select SE</option>
+                    <option value="Alex">Alex</option>
+                    <option value="Jamie">Jamie</option>
+                    <option value="Jordan">Jordan</option>
+                    <option value="Taylor">Taylor</option>
+                    <option value="Sam">Sam</option>
+                    <option value="Casey">Casey</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Deal Stage</label>
+                  <select id="dealStage" onchange="updateTopBar(); saveData();">
+                    <option value="Initial Discovery">Initial Discovery</option>
+                    <option value="Initial Demo">Initial Demo</option>
+                    <option value="Deep Dive Discovery">Deep Dive Discovery</option>
+                    <option value="Deep Dive Demo">Deep Dive Demo</option>
+                    <option value="Trial">Trial</option>
+                    <option value="Solution Validation">Solution Validation</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field-row">
+                <div class="field">
+                  <label>Prospect / Company Name</label>
+                  <input type="text" id="prospectName" placeholder="e.g. Acme Corp Ltd" oninput="updateTopBar(); saveData();">
+                </div>
+                <div class="field">
+                  <label>Learner Count</label>
+                  <select id="learnerCount" onchange="saveData()">
+                    <option value="">Select range...</option>
+                    <option>Under 1,000</option>
+                    <option>1,000 – 5,000</option>
+                    <option>5,000 – 10,000</option>
+                    <option>10,000 – 25,000</option>
+                    <option>25,000+</option>
+                  </select>
+                </div>
+              </div>
+              <div class="field-row single">
+                <div class="field">
+                  <label>Industry</label>
+                  <select id="industry" onchange="saveData()">
+                    <option value="">Select industry...</option>
+                    <option>Healthcare / Life Sciences</option>
+                    <option>Financial Services / Fintech</option>
+                    <option>SaaS / Technology</option>
+                    <option>Manufacturing / Automotive</option>
+                    <option>Retail / eCommerce</option>
+                    <option>Non-Profit / Charity</option>
+                    <option>Education / EdTech</option>
+                    <option>Professional Services</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div style="padding:12px 18px 16px;display:flex;justify-content:flex-end;">
+              <button class="btn btn-lime" onclick="goStep2()">
+                Next: Choose Deal Type
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+          </div>
 
-      <!-- LEFT: Details form -->
-      <div class="card" style="grid-column:1;grid-row:1/3;">
-        <div class="card-top"><span class="card-title">Prospect Details</span><span class="card-menu">···</span></div>
-        <div class="card-body">
-          <div class="field-row">
-            <div class="field">
-              <label>Your Name (SE)</label>
-              <select id="seName" onchange="updateTopBar()">
-                <option value="">Select SE</option>
-                <option>Nikhil Sharma</option>
-                <option>Sarah O'Brien</option>
-                <option>James Thornton</option>
-                <option>Aoife Murphy</option>
-                <option>Ciaran Kelly</option>
-                <option>Laura Fitzpatrick</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Deal Stage</label>
-              <select id="dealStage" onchange="updateTopBar()">
-                <option value="Initial Discovery">Initial Discovery</option>
-                <option value="Initial Demo">Initial Demo</option>
-                <option value="Deep Dive Discovery">Deep Dive Discovery</option>
-                <option value="Deep Dive Demo">Deep Dive Demo</option>
-                <option value="Trial">Trial</option>
-                <option value="Solution Validation">Solution Validation</option>
-              </select>
-            </div>
-          </div>
-          <div class="field-row">
-            <div class="field">
-              <label>Prospect / Company</label>
-              <input type="text" id="prospectName" placeholder="e.g. Acme Corp Ltd" oninput="updateTopBar()">
-            </div>
-            <div class="field">
-              <label>Learner Count</label>
-              <select id="learnerCount">
-                <option value="">Select range</option>
-                <option>Under 1,000</option>
-                <option>1,000 – 3,000</option>
-                <option>3,000 – 5,000</option>
-                <option>5,000 – 10,000</option>
-                <option>10,000 – 25,000</option>
-                <option>25,000 – 50,000</option>
-                <option>50,000+</option>
-              </select>
-            </div>
-          </div>
-          <div class="field-row">
-            <div class="field">
-              <label>Use Case</label>
-              <select id="useCase" onchange="updateTopBar()">
-                <option value="I">Internal (Employees)</option>
-                <option value="E">External (Customers)</option>
-                <option value="B">Both</option>
-                <option value="M">Membership / Association</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Industry</label>
-              <select id="industry">
-                <option value="">Select industry</option>
-                <option>Financial Services</option>
-                <option>Healthcare &amp; Life Sciences</option>
-                <option>Technology &amp; SaaS</option>
-                <option>Manufacturing</option>
-                <option>Retail &amp; eCommerce</option>
-                <option>Professional Services</option>
-                <option>Non-Profit / Association</option>
-                <option>Government &amp; Public Sector</option>
-                <option>Education</option>
-                <option>Energy &amp; Utilities</option>
-                <option>Media &amp; Entertainment</option>
-                <option>Other</option>
-              </select>
-            </div>
-          </div>
-        </div>
-        <div style="padding:12px 18px 16px;display:flex;justify-content:flex-end;">
-          <button class="btn btn-lime" onclick="goStep2()">
-            Next: Deal Type
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-        </div>
-      </div>
+          <div class="card" id="s1-right">
+            <div class="card-top"><span class="card-title">Deal use case (type)</span><span class="card-menu">···</span></div>
+            <div class="card-body">
+              <div class="deal-grid">
+                <div class="deal-card" id="dc-employee" onclick="toggleDealType('employee')">
+                  <div class="deal-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                  </div>
+                  <div class="deal-info">
+                    <div class="deal-name">Employee Training</div>
+                    <div class="deal-desc">Internal workforce, onboarding, compliance</div>
+                  </div>
+                  <div class="deal-check"></div>
+                </div>
+                <div class="deal-card" id="dc-customer" onclick="toggleDealType('customer')">
+                  <div class="deal-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                  </div>
+                  <div class="deal-info">
+                    <div class="deal-name">Customer Education</div>
+                    <div class="deal-desc">External customer / partner product training</div>
+                  </div>
+                  <div class="deal-check"></div>
+                </div>
+                <div class="deal-card" id="dc-member" onclick="toggleDealType('member')">
+                  <div class="deal-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                  </div>
+                  <div class="deal-info">
+                    <div class="deal-name">Membership / Association</div>
+                    <div class="deal-desc">Professional bodies, CPD, member certification</div>
+                  </div>
+                  <div class="deal-check"></div>
+                </div>
+              </div>
+              <div class="also-row" id="alsoRow" style="display:none">
+                <input type="checkbox" id="alsoCheck" onchange="toggleAlso(); saveData()">
+                <label for="alsoCheck">Also assess <strong id="alsoLabel">secondary</strong> use case (multi-use deal)</label>
+              </div>
+            </div>
+            <div style="padding:12px 18px 16px;display:flex;justify-content:space-between;">
+              <button class="btn btn-ghost" onclick="goStep1()">← Back</button>
+              <button class="btn btn-lime btn-disabled" id="step2Next" onclick="goStep3()">
+                Start Assessment
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 2v20M2 12h20"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <!-- RIGHT: Deal type -->
-      <div class="card" style="grid-column:2;grid-row:1/3;">
-        <div class="card-top"><span class="card-title">Deal Type</span><span class="card-menu">···</span></div>
-        <div class="card-body">
-          <div class="deal-grid">
-            <div class="deal-card" id="dc-employee" onclick="toggleDeal('employee')">
-              <div class="deal-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-              </div>
-              <div class="deal-info">
-                <div class="deal-name">Employee Training</div>
-                <div class="deal-desc">Internal workforce, onboarding, compliance</div>
-              </div>
-              <div class="deal-check"></div>
-            </div>
-            <div class="deal-card" id="dc-customer" onclick="toggleDeal('customer')">
-              <div class="deal-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-              </div>
-              <div class="deal-info">
-                <div class="deal-name">Customer Education</div>
-                <div class="deal-desc">External customer / partner product training</div>
-              </div>
-              <div class="deal-check"></div>
-            </div>
-            <div class="deal-card" id="dc-member" onclick="toggleDeal('member')">
-              <div class="deal-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-              </div>
-              <div class="deal-info">
-                <div class="deal-name">Member / Association</div>
-                <div class="deal-desc">Professional bodies, CPD, member certification</div>
-              </div>
-              <div class="deal-check"></div>
-            </div>
-          </div>
-          <div class="also-row" id="alsoRow" style="display:none">
-            <input type="checkbox" id="alsoCheck" onchange="toggleAlso()">
-            <label for="alsoCheck">Also assess <strong id="alsoLabel">secondary</strong> use case (multi-use deal)</label>
-          </div>
-        </div>
-        <div style="padding:12px 18px 16px;display:flex;justify-content:space-between;">
-          <button class="btn btn-ghost btn-sm" onclick="goStep1()">← Back</button>
-          <button class="btn btn-lime btn-disabled" id="s2Btn" onclick="goStep3()">
-            Start Assessment
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
+      <div id="step2-panel" class="step-panel grid">
+        <div style="grid-template-columns: 1fr 1.3fr; gap: 12px">
+          
+          <div class="card" id="s2-score">
+            <div class="card-top"><span class="card-title">Complexity Score</span><span class="card-menu">···</span></div>
+            <div class="score-hero">
+              <div class="score-big" id="scoreBig">0</div>
+              <div class="score-info">
+                <div class="score-badge neutral" id="scoreBadge"><div class="score-badge-dot"></div><span>Awaiting answers</span></div>
+                <div class="score-stage" id="scoreStage"></div>
+              </div>
+            </div>
+            <div class="meter-wrap">
+              <div class="meter-labels"><span id="mMin">—</span><span id="mRange">range</span><span id="mMax">—</span></div>
+              <div class="meter-track"><div class="meter-fill" id="mFill" style="width:50%;background:var(--bg2)"></div></div>
+            </div>
+            <div class="cat-bars" id="catBars"></div>
+          </div>
 
-    <!-- ══ STEP 2 ══ -->
-    <div id="step2" class="grid fadein" style="display:none;">
+          <div class="card" id="s2-form">
+            <div class="form-tabs" id="formTabs"></div>
+            <div class="colhead colhead-r">
+              <div>Requirement</div>
+              <div>Answer</div>
+              <div>Wt</div>
+              <div>Score</div>
+            </div>
+            <div id="rowsContainer" style="flex:1;overflow-y:auto;min-height:0;"></div>
+            <div class="sticky-footer">
+              <div class="sfooter-score">
+                <div class="sfooter-num" id="sFooterScore">0</div>
+                <div class="sfooter-label">Total score</div>
+              </div>
+              <div class="sfooter-right">
+                <button class="btn btn-ghost btn-sm" onclick="navTo(1)">← Back</button>
+                <button class="btn btn-lime btn-sm" onclick="goStep4()">
+                  View Results
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
 
-      <!-- Scoring form (large left) -->
-      <div class="card" style="grid-column:1;grid-row:1/3;padding-bottom:56px;">
-        <div class="card-top" style="flex-wrap:wrap;gap:6px;">
-          <span class="card-title" id="formCardTitle">Assessment</span>
-          <span class="card-menu">···</span>
-        </div>
-        <div class="form-tabs" id="formTabs"></div>
-        <div class="form-colhead">
-          <div class="fch">Requirement</div>
-          <div class="fch">Answer</div>
-          <div class="fch r">Wt</div>
-          <div class="fch r">Score</div>
-        </div>
-        <div id="rowsContainer" style="flex:1;overflow-y:auto;min-height:0;"></div>
-      </div>
+          <div class="card" id="s2-steps">
+            <div class="card-top"><span class="card-title">Projected Next Steps</span><span class="card-menu">···</span></div>
+            <div class="card-body">
+              <div class="steps-list" id="stepsBars"></div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <!-- Score + meter -->
-      <div class="card" style="grid-column:2;grid-row:1;">
-        <div class="card-top"><span class="card-title">Complexity Score</span><span class="card-menu">···</span></div>
-        <div class="score-hero">
-          <div class="score-big" id="scoreBig" style="color:var(--muted)">0</div>
-          <div class="score-info">
-            <div class="score-badge neutral" id="scoreBadge"><div class="score-badge-dot"></div><span>Awaiting answers</span></div>
-            <div class="score-stage" id="scoreStage"></div>
-          </div>
-        </div>
-        <div class="meter-wrap">
-          <div class="meter-labels"><span id="mMin">—</span><span id="mRange">range</span><span id="mMax">—</span></div>
-          <div class="meter-track"><div class="meter-fill" id="mFill" style="width:50%;background:var(--surface3)"></div></div>
-        </div>
-        <div class="card-top" style="padding-top:0"><span style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-family:'DM Mono',monospace;">Category Breakdown</span></div>
-        <div class="cat-bars" id="catBars"></div>
-      </div>
+      <div id="step3-panel" class="step-panel grid">
+        <div id="s3-bento">
+          
+          <div class="card result-hero result-status" id="s3-hero">
+            <div class="confetti-wrap" id="confettiWrap"></div>
+            <div class="result-label">Combined Assessment</div>
+            
+            <div class="avatar-cluster">
+              <img src="https://sai.co/img/avatars/4.jpg" class="lu-avatar">
+              <img src="https://sai.co/img/avatars/3.jpg" class="lu-avatar" style="transform: translateX(-8px);">
+              <img src="https://sai.co/img/avatars/2.jpg" class="lu-avatar" style="transform: translateX(-16px);">
+              <div class="lu-avatar-dot">·</div>
+            </div>
 
-      <!-- Next steps preview -->
-      <div class="card" style="grid-column:2;grid-row:2;">
-        <div class="card-top"><span class="card-title">Projected Next Steps</span><span class="card-menu">···</span></div>
-        <div class="card-body" style="display:flex;flex-direction:column;">
-          <div class="steps-list" id="stepsBars"></div>
-        </div>
-        <div style="padding:10px 18px 14px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);">
-          <button class="btn btn-ghost btn-sm" onclick="goStep1()">← Back</button>
-          <button class="btn btn-lime btn-sm" onclick="goStep4()">
-            View Results
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
+            <div class="result-massive" id="rBig">0<span class="subscript" id="rRisks">Rs</span></div>
+            
+            <div class="risk-badge neutral" id="rBadge">
+              <div class="result-badge-dot"></div><span>Neutral</span>
+            </div>
+            <div class="risk-stage" id="rStage">Prospect Stage</div>
+            <div style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace" id="rDate"></div>
+          </div>
 
-    <!-- ══ STEP 3 — RESULTS ══ -->
-    <div id="step3" class="grid fadein" style="display:none;">
+          <div class="card urgency-bento" id="rUrgency" style="display:none;">
+            <div class="ub-badge-row">
+              <svg class="ub-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16"/></svg>
+              Attention Required<span>!</span>
+            </div>
+            <div class="ub-huge" id="ubHuge">1<span class="subscript">Crit</span></div>
+            <div class="ub-msg" id="ubMsg">This deal has complex requirements or pain points that must be discussed immediately. Review next steps before your next prospect meeting.</div>
+          </div>
 
-      <!-- Result hero -->
-      <div class="card" style="grid-column:1;grid-row:1;" id="resultHeroCard">
-        <div class="confetti-wrap" id="confettiWrap"></div>
-        <div class="card-top"><span class="card-title">Assessment Result</span><span class="card-menu">···</span></div>
-        <div class="result-status">
-          <div class="result-score-row">
-            <div class="result-big" id="rBig">0</div>
-            <div class="result-right">
-              <div class="result-badge" id="rBadge"><div class="result-badge-dot"></div><span>—</span></div>
-              <div class="result-action" id="rAction"></div>
-            </div>
-          </div>
-          <div id="rUrgency"></div>
-        </div>
-        <div class="mini-scores" id="miniScores"></div>
-        <div class="card-footer">
-          <div class="legend-item"><div class="legend-dot" style="background:var(--lime)"></div>Not Risky</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>Risky</div>
-          <div class="legend-item"><div class="legend-dot" style="background:var(--red)"></div>Very Risky</div>
-          <div style="margin-left:auto;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)" id="rDate"></div>
-        </div>
-      </div>
+          <div class="sai-phone">
+            <div class="sai-notch"></div>
+            <div class="sai-screen">
+              <div class="sai-s-top">9:41 AM</div>
+              <div class="sai-s-content">May 2025<span>2 Meetings</span></div>
+              <div class="avatar-cluster" style="margin: 16px 0; border: none;">
+                  <img src="https://sai.co/img/avatars/4.jpg" class="lu-avatar">
+                  <img src="https://sai.co/img/avatars/3.jpg" class="lu-avatar" style="transform: translateX(-8px);">
+              </div>
+              <div class="dial-score-card" style="width: 120px; height: 120px; margin: 10px auto;">
+                  <div class="dial-label" style="top: 10px;">Derive Wt</div>
+                  <div class="dial-massive" style="font-size: 40px;" id="saiDialUC">I</div>
+              </div>
+              <div class="sai-s-yellow">You have a Meeting<strong>09:56 Development call</strong></div>
+            </div>
+          </div>
 
-      <!-- Category chart (results) -->
-      <div class="card" style="grid-column:1;grid-row:2;">
-        <div class="card-top"><span class="card-title">Score by Category</span><span class="card-menu">···</span></div>
-        <div class="cat-bars" id="rCatBars" style="padding:8px 18px 14px;"></div>
-        <div class="card-footer" id="rCatLegend"></div>
-      </div>
+          <div class="mini-scores card-top" style="grid-column: 2; padding: 0;">
+            <div class="card-title">Detailed Scores</div>
+          </div>
+          <div class="mini-scores" id="miniScores"></div>
 
-      <!-- Next steps (results) -->
-      <div class="card" style="grid-column:2;grid-row:1;">
-        <div class="card-top"><span class="card-title" id="rStepsTitle">Next Steps</span><span class="card-menu">···</span></div>
-        <div class="card-body" style="display:flex;flex-direction:column;">
-          <div class="steps-list" id="rStepsBars"></div>
-        </div>
-      </div>
+          <div class="card r-cat-bento" id="s3-chart">
+            <div class="card-top"><span class="card-title">Score by developed area</span><span class="card-menu">···</span></div>
+            <div class="cat-bars" id="rCatBars" style="padding:8px 18px 14px;"></div>
+          </div>
 
-      <!-- Share -->
-      <div class="card" style="grid-column:2;grid-row:2;">
-        <div class="card-top"><span class="card-title">Share Assessment</span><span class="card-menu">···</span></div>
-        <div class="msg-tabs">
-          <button class="mtab active" onclick="switchMsg('slack',this)">Slack</button>
-          <button class="mtab" onclick="switchMsg('email',this)">Email</button>
-        </div>
-        <textarea class="msg-out" id="msgOut" readonly></textarea>
-        <div class="export-row">
-          <button class="btn btn-sm btn-copy" onclick="copyMsg()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-            Copy Message
-          </button>
-         <button class="btn btn-sm btn-sheets" onclick="exportExcel()">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-  Download Excel
-</button>
-          <button class="btn btn-sm btn-restart" onclick="restart()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-            New
-          </button>
-        </div>
-      </div>
-    </div>
+          <div class="card r-steps-bento" id="s3-steps">
+            <div class="card-top"><span class="card-title" id="rStepsTitle">Next Steps Timeline</span><span class="card-menu">···</span></div>
+            <div class="card-body">
+              <div class="steps-list" id="rStepsBars"></div>
+            </div>
+          </div>
 
-  </div><!-- /content -->
-</div><!-- /main -->
-<div class="toast" id="toast"></div>
+          <div class="card share-bento" id="s3-share">
+            <div class="card-top"><span class="card-title">Share complexity note</span><span class="card-menu">···</span></div>
+            <div class="msg-tabs">
+              <button class="mtab active" onclick="switchMsg('slack',this)">Slack</button>
+              <button class="mtab" onclick="switchMsg('email',this)">Email</button>
+            </div>
+            <textarea class="msg-out" id="msgOut" readonly></textarea>
+            <div style="padding:10px 18px 14px;display:flex;gap:8px;border-top:1px solid var(--border);">
+              <button class="btn btn-copy btn-lime btn-sm" onclick="copyMsg()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                Copy for Slack / Email
+              </button>
+              <button class="btn btn-copy btn-ghost btn-sm" onclick="exportSheets()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18M3 9h18M3 15h18"/></svg>
+                Download for Google Sheets
+              </button>
+            </div>
+          </div>
 
-<!-- ════════════════════════════════════════
-     DATA
-     ════════════════════════════════════════ -->
+          <div class="card restart-bento share-bento card-top" style="grid-column: 3; margin-top: 12px; grid-row: 3;" onclick="restart()">
+             <div>New Assessment</div>
+          </div>
+        </div>
+      </div>
+
+    </div></div></div><div class="toast" id="toast"></div>
+
 <script>
 const TABS = {
-  employee:{label:"Employee Training",
-    rows:[
-      {cat:"UX / UI",           q:"Custom UI — code access, custom widgets, fonts",                             w:{I:5, E:5, B:5, M:5 },type:"crit"},
-      {cat:"UX / UI",           q:"Unsupported UI languages required",                                          w:{I:5, E:5, B:5, M:5 },type:"crit"},
-      {cat:"Mobile",            q:"White-labelled mobile app with push notifications & full branding",          w:{I:5, E:5, B:5, M:5 },type:"crit"},
-      {cat:"Scale",             q:"More than 5 languages for course translation",                               w:{I:10,E:10,B:10,M:10},type:"crit"},
-      {cat:"User Management",   q:"More than 10K users",                                                        w:{I:3, E:1, B:1, M:1 },type:"crit"},
-      {cat:"User Management",   q:"Hierarchy structure — multiple groups, manager permissions, complex roles",  w:{I:12,E:0, B:9, M:8 },type:"crit"},
-      {cat:"Skills",            q:"Competency / Skill Matrix requirements from the LMS",                        w:{I:10,E:10,B:10,M:10},type:"crit"},
-      {cat:"Courses & Content", q:"More than 100 courses",                                                      w:{I:6, E:6, B:6, M:6 },type:"crit"},
-      {cat:"Courses & Content", q:"More than 1,000 course modules — asset management",                         w:{I:8, E:8, B:8, M:8 },type:"crit"},
-      {cat:"Courses & Content", q:"Content format incompatibility — AICC, Labs, LTI / AR / VR",               w:{I:8, E:8, B:8, M:8 },type:"crit"},
-      {cat:"Courses & Content", q:"Heavy Resource Management — ILT scheduling, recurring sessions",            w:{I:5, E:5, B:5, M:5 },type:"crit"},
-      {cat:"Courses & Content", q:"AI functionality — course creation, AI assistant, AI tagging",              w:{I:8, E:8, B:8, M:8 },type:"crit"},
-      {cat:"Courses & Content", q:"Complex approval workflows, prerequisites, equivalency",                     w:{I:7, E:7, B:7, M:7 },type:"crit"},
-      {cat:"Integrations",      q:"Custom integrations / not OOTB, or complex manager structure via API",       w:{I:5, E:5, B:5, M:5 },type:"crit"},
-      {cat:"Integrations",      q:"Heavy API use / Direct DB access / Bulk data export",                        w:{I:5, E:5, B:5, M:5 },type:"crit"},
-      {cat:"Integrations",      q:"Lack of developer resource to implement tech workarounds",                   w:{I:10,E:10,B:10,M:10},type:"crit"},
-      {cat:"Scale",             q:"More than 250 Dynamic Rules / 30+ CUD fields",                              w:{I:5, E:5, B:5, M:5 },type:"crit"},
-      {cat:"Learning Ecosystem",q:"Unsupported content integrations — Udemy, Pluralsight, etc.",               w:{I:8, E:8, B:8, M:8 },type:"crit"},
-      {cat:"Learning Ecosystem",q:"Data migration of more than 2 years of historic data",                      w:{I:3, E:3, B:3, M:3 },type:"crit"},
-      {cat:"Workflows",         q:"Learners need to create courses for their learning community",               w:{I:8, E:8, B:8, M:8 },type:"crit"},
-      {cat:"Pain",              q:"Prospect has clearly identified pain that LearnUpon can solve",              w:{I:10,E:10,B:10,M:10},type:"pain"},
-    ]},
-  customer:{label:"Customer Education",
-    rows:[
-      {cat:"UX / UI",           q:"Custom UI — code access, custom widgets, fonts",                             w:{I:5, E:5, B:5, M:5 },type:"crit"},
-      {cat:"UX / UI",           q:"Unsupported UI languages required",                                          w:{I:7, E:8, B:7, M:8 },type:"crit"},
-      {cat:"Mobile",            q:"White-labelled mobile app with push notifications & full branding",          w:{I:5, E:5, B:5, M:5 },type:"crit"},
-      {cat:"User Management",   q:"More than 10K users",                                                        w:{I:5, E:5, B:5, M:5 },type:"crit"},
-      {cat:"User Management",   q:"Hierarchy structure — multiple groups, manager permissions, complex roles",  w:{I:3, E:3, B:3, M:3 },type:"crit"},
-      {cat:"User Management",   q:"Complex CUD requirements",                                                   w:{I:5, E:5, B:5, M:5 },type:"crit"},
-      {cat:"Certification",     q:"Customer certification requirements",                                        w:{I:2, E:2, B:2, M:2 },type:"crit"},
-      {cat:"Courses & Content", q:"More than 100 courses",                                                      w:{I:3, E:3, B:3, M:3 },type:"crit"},
-      {cat:"Courses & Content", q:"Consistent updates, wide language range, many content versions",            w:{I:8, E:8, B:8, M:8 },type:"crit"},
-      {cat:"Courses & Content", q:"Content incompatibility — Labs, Walkme, hotspots",                          w:{I:8, E:8, B:8, M:8 },type:"crit"},
-      {cat:"Courses & Content", q:"Robust ILT requirements — resource-heavy configuration",                    w:{I:6, E:6, B:6, M:6 },type:"crit"},
-      {cat:"Reporting",         q:"Detailed reporting requirements OOTB",                                       w:{I:8, E:8, B:8, M:8 },type:"crit"},
-      {cat:"Courses & Content", q:"Complex approval workflows, prerequisites, equivalency",                     w:{I:7, E:7, B:7, M:7 },type:"crit"},
-      {cat:"Integrations",      q:"Custom integrations with their own platform / product",                      w:{I:7, E:7, B:7, M:7 },type:"crit"},
-      {cat:"Integrations",      q:"Completely unsupported integration",                                         w:{I:7, E:7, B:7, M:7 },type:"crit"},
-      {cat:"Integrations",      q:"Heavy API use / Direct DB access / Bulk data export",                        w:{I:7, E:7, B:7, M:7 },type:"crit"},
-      {cat:"Integrations",      q:"Lack of developer resource to implement tech workarounds",                   w:{I:10,E:10,B:10,M:10},type:"crit"},
-      {cat:"Scale",             q:"More than 250 Dynamic Rules / 30+ CUD fields",                              w:{I:5, E:5, B:5, M:5 },type:"crit"},
-      {cat:"Scale",             q:"More than 10 portals / complex course or portal licensing",                  w:{I:2, E:8, B:8, M:8 },type:"crit"},
-      {cat:"eCommerce",         q:"Complex eCommerce pricing model — subscriptions, geo-specific",             w:{I:0, E:10,B:10,M:10},type:"crit"},
-      {cat:"eCommerce",         q:"Unsupported eCommerce payments — payment gateway, Pay with PO",             w:{I:10,E:10,B:10,M:10},type:"crit"},
-      {cat:"External Focus",    q:"Complex billing / finance processes related to LMS",                         w:{I:4, E:8, B:7, M:8 },type:"crit"},
-      {cat:"Existing Solution", q:"Using Custom or Legacy LMS — CSOD, SuccessFactors, Moodle etc.",            w:{I:3, E:3, B:3, M:3 },type:"crit"},
-      {cat:"Pain",              q:"Prospect has clearly identified pain that LearnUpon can solve",              w:{I:10,E:10,B:10,M:10},type:"pain"},
-      {cat:"Search",            q:"Detailed search requirements",                                               w:{I:3, E:3, B:3, M:3 },type:"crit"},
-      {cat:"External Focus",    q:"Custom Web Pages requirement",                                               w:{I:5, E:5, B:5, M:5 },type:"crit"},
-    ]},
-  member:{label:"Member / Association",
-    rows:[
-      {cat:"UX / UI",           q:"Unsupported UI languages required",                                          w:{I:7, E:8, B:7, M:8 },type:"crit"},
-      {cat:"Mobile",            q:"White-labelled mobile app with push notifications & full branding",          w:{I:5, E:5, B:5, M:5 },type:"crit"},
-      {cat:"User Management",   q:"More than 10K users",                                                        w:{I:5, E:5, B:5, M:5 },type:"crit"},
-      {cat:"User Management",   q:"Hierarchy structure — multiple groups, manager permissions, complex roles",  w:{I:8, E:8, B:8, M:8 },type:"crit"},
-      {cat:"CPD",               q:"Complex CPD tracking — learner or manager dashboards",                       w:{I:10,E:10,B:10,M:10},type:"crit"},
-      {cat:"Courses & Content", q:"More than 100 courses",                                                      w:{I:5, E:5, B:5, M:5 },type:"crit"},
-      {cat:"Courses & Content", q:"More than 1,000 content modules",                                           w:{I:7, E:7, B:7, M:7 },type:"crit"},
-      {cat:"Courses & Content", q:"Third-party content requirements not OOTB",                                 w:{I:10,E:10,B:10,M:10},type:"crit"},
-      {cat:"Courses & Content", q:"Robust ILT requirements — resource-heavy configuration",                    w:{I:10,E:10,B:10,M:10},type:"crit"},
-      {cat:"Courses & Content", q:"Complex approval workflows, prerequisites, equivalency",                     w:{I:7, E:7, B:7, M:7 },type:"crit"},
-      {cat:"Integrations",      q:"Unsupported integrations — AMS, CRM, MIS system",                          w:{I:5, E:5, B:5, M:5 },type:"crit"},
-      {cat:"Integrations",      q:"Embedded Learning requirement",                                              w:{I:7, E:7, B:7, M:7 },type:"crit"},
-      {cat:"Integrations",      q:"Heavy API use / Direct DB access / Bulk data export",                        w:{I:7, E:7, B:7, M:7 },type:"crit"},
-      {cat:"Integrations",      q:"Lack of developer resource to implement tech workarounds",                   w:{I:10,E:10,B:10,M:10},type:"crit"},
-      {cat:"Scale",             q:"More than 250 Dynamic Rules / 30+ CUD fields",                              w:{I:5, E:5, B:5, M:5 },type:"crit"},
-      {cat:"Scale",             q:"More than 10 portals / complex course or portal licensing",                  w:{I:2, E:8, B:8, M:8 },type:"crit"},
-      {cat:"eCommerce",         q:"Complex eCommerce pricing model — subscriptions, geo-specific",             w:{I:8, E:8, B:8, M:8 },type:"crit"},
-      {cat:"eCommerce",         q:"Unsupported eCommerce payments — payment gateway, Pay with PO",             w:{I:8, E:8, B:8, M:8 },type:"crit"},
-      {cat:"External Focus",    q:"Complex billing / finance processes related to LMS",                         w:{I:8, E:8, B:8, M:8 },type:"crit"},
-      {cat:"Existing Solution", q:"Using Custom or Legacy LMS",                                                 w:{I:3, E:3, B:3, M:3 },type:"crit"},
-      {cat:"Social",            q:"Deep community feature requirements",                                        w:{I:5, E:5, B:5, M:5 },type:"crit"},
-      {cat:"Social",            q:"Sharing badges or gamification on social platforms",                         w:{I:5, E:5, B:5, M:5 },type:"crit"},
-      {cat:"Pain",              q:"Prospect has clearly identified pain that LearnUpon can solve",              w:{I:10,E:10,B:10,M:10},type:"pain"},
-    ]}
+  employee:{label:"Employee Training",icon:"👩‍💼",rows:[{cat:"UX / UI",q:"Custom UI — code access, custom widgets, fonts",w:{I:5,E:5,B:5},type:"crit"},{cat:"UX / UI",q:"Unsupported UI languages required",w:{I:5,E:5,B:5},type:"crit"},{cat:"Mobile",q:"White-labelled mobile app with push notifications & branding",w:{I:5,E:5,B:5},type:"crit"},{cat:"Scale",q:"More than 5 languages for course translation",w:{I:10,E:10,B:10},type:"crit"},{cat:"User Management",q:"More than 10K users",w:{I:3,E:1,B:1},type:"crit"},{cat:"User Management",q:"Hierarchy structure — multiple groups, complex roles",w:{I:12,E:0,B:9},type:"crit"},{cat:"Skills",q:"Competency / Skill Matrix requirements from LMS",w:{I:10,E:10,B:10},type:"crit"},{cat:"Courses & Content",q:"More than 100 courses",w:{I:6,E:6,B:6},type:"crit"},{cat:"Courses & Content",q:"More than 1,000 course modules — asset management",w:{I:8,E:8,B:8},type:"crit"},{cat:"Courses & Content",q:"Content incompatibility — AICC, Labs, LTI / AR / VR",w:{I:8,E:8,B:8},type:"crit"},{cat:"Courses & Content",q:"Heavy Resource Management — ILT, recurring sessions",w:{I:5,E:5,B:5},type:"crit"},{cat:"Courses & Content",q:"AI functionality — creation, assistant, tagging",w:{I:8,E:8,B:8},type:"crit"},{cat:"Courses & Content",q:"Complex approval workflows, prerequisites, equivalency",w:{I:7,E:7,B:7},type:"crit"},{cat:"Integrations",q:"Custom integrations / not OOTB, complex API structure",w:{I:5,E:5,B:5},type:"crit"},{cat:"Integrations",q:"Heavy API use / Direct DB access / Bulk data export",w:{I:5,E:5,B:5},type:"crit"},{cat:"Integrations",q:"Lack of developer resource to implement tech workarounds",w:{I:10,E:10,B:10},type:"crit"},{cat:"Scale",q:"More than 250 Dynamic Rules / 30+ CUD fields",w:{I:5,E:5,B:5},type:"crit"},{cat:"Learning Ecosystem",q:"Unsupported content integrations — Udemy, Pluralsight, etc.",w:{I:8,E:8,B:8},type:"crit"},{cat:"Learning Ecosystem",q:"Data migration of more than 2 years of historic data",w:{I:3,E:3,B:3},type:"crit"},{cat:"Workflows",q:"Learners need to create courses for their community",w:{I:8,E:8,B:8},type:"crit"},{cat:"Pain",q:"Prospect has clearly identified pain that LearnUpon can solve",w:{I:10,E:10,B:10},type:"pain"},]},
+  customer:{label:"Customer Education",icon:"🤝",rows:[{cat:"UX / UI",q:"Custom UI — code access, custom widgets, fonts",w:{I:5,E:5,B:5},type:"crit"},{cat:"UX / UI",q:"Unsupported UI languages required",w:{I:7,E:8,B:7},type:"crit"},{cat:"Mobile",q:"White-labelled mobile app with push notifications & branding",w:{I:5,E:5,B:5},type:"crit"},{cat:"User Management",q:"More than 10K users",w:{I:5,E:5,B:5},type:"crit"},{cat:"User Management",q:"Hierarchy structure — multiple groups, complex roles",w:{I:3,E:3,B:3},type:"crit"},{cat:"User Management",q:"Complex CUD requirements",w:{I:5,E:5,B:5},type:"crit"},{cat:"Certification",q:"Customer certification requirements",w:{I:2,E:2,B:2},type:"crit"},{cat:"Courses & Content",q:"More than 100 courses",w:{I:3,E:3,B:3},type:"crit"},{cat:"Courses & Content",q:"Consistent updates, wide language range, many content versions",w:{I:8,E:8,B:8},type:"crit"},{cat:"Courses & Content",q:"Content incompatibility — Labs, Walkme, hotspots",w:{I:8,E:8,B:8},type:"crit"},{cat:"Courses & Content",q:"Robust ILT requirements — resource-heavy configuration",w:{I:6,E:6,B:6},type:"crit"},{cat:"Reporting",q:"Detailed reporting requirements OOTB",w:{I:8,E:8,B:8},type:"crit"},{cat:"Courses & Content",q:"Complex approval workflows, prerequisites, equivalency",w:{I:7,E:7,B:7},type:"crit"},{cat:"Integrations",q:"Custom integrations with their own platform / product",w:{I:7,E:7,B:7},type:"crit"},{cat:"Integrations",q:"Completely unsupported integration",w:{I:7,E:7,B:7},type:"crit"},{cat:"Integrations",q:"Heavy API use / Direct DB access / Bulk data export",w:{I:7,E:7,B:7},type:"crit"},{cat:"Integrations",q:"Lack of developer resource to implement tech workarounds",w:{I:10,E:10,B:10},type:"crit"},{cat:"Scale",q:"More than 250 Dynamic Rules / 30+ CUD fields",w:{I:5,E:5,B:5},type:"crit"},{cat:"Scale",q:"More than 10 portals / complex course or portal licensing",w:{I:2,E:8,B:8},type:"crit"},{cat:"eCommerce",q:"Complex eCommerce pricing model — subscriptions, geo-specific",w:{I:0,E:10,B:10},type:"crit"},{cat:"eCommerce",q:"Unsupported eCommerce payments — payment gateway, Pay with PO",w:{I:10,E:10,B:10},type:"crit"},{cat:"External Focus",q:"Complex billing / finance processes related to LMS",w:{I:4,E:8,B:7},type:"crit"},{cat:"Existing Solution",q:"Using Custom or Legacy LMS — CSOD, SuccessFactors, Moodle etc.",w:{I:3,E:3,B:3},type:"crit"},{cat:"Pain",q:"Prospect has clearly identified pain that LearnUpon can solve",w:{I:10,E:10,B:10},type:"pain"},{cat:"Search",q:"Detailed search requirements",w:{I:3,E:3,B:3},type:"crit"},{cat:"External Focus",q:"Custom Web Pages requirement",w:{I:5,E:5,B:5},type:"crit"},]},
+  member:{label:"Member / Association",icon:"🏛️",rows:[{cat:"UX / UI",q:"Unsupported UI languages required",w:{I:7,E:8,B:7},type:"crit"},{cat:"Mobile",q:"White-labelled mobile app with push notifications & branding",w:{I:5,E:5,B:5},type:"crit"},{cat:"User Management",q:"More than 10K users",w:{I:5,E:5,B:5},type:"crit"},{cat:"User Management",q:"Hierarchy structure — multiple groups, complex roles",w:{I:8,E:8,B:8},type:"crit"},{cat:"CPD",q:"Complex CPD tracking — learner or manager dashboards",w:{I:10,E:10,B:10},type:"crit"},{cat:"Courses & Content",q:"More than 100 courses",w:{I:5,E:5,B:5},type:"crit"},{cat:"Courses & Content",q:"More than 1,000 content modules",w:{I:7,E:7,B:7},type:"crit"},{cat:"Courses & Content",q:"Third-party content requirements not OOTB",w:{I:10,E:10,B:10},type:"crit"},{cat:"Courses & Content",q:"Robust ILT requirements — resource-heavy configuration",w:{I:10,E:10,B:10},type:"crit"},{cat:"Courses & Content",q:"Complex approval workflows, prerequisites, equivalency",w:{I:7,E:7,B:7},type:"crit"},{cat:"Integrations",q:"Unsupported integrations — AMS, CRM, MIS system",w:{I:5,E:5,B:5},type:"crit"},{cat:"Integrations",q:"Embedded Learning requirement",w:{I:7,E:7,B:7},type:"crit"},{cat:"Integrations",q:"Heavy API use / Direct DB access / Bulk data export",w:{I:7,E:7,B:7},type:"crit"},{cat:"Integrations",q:"Lack of developer resource to implement tech workarounds",w:{I:10,E:10,B:10},type:"crit"},{cat:"Scale",q:"More than 250 Dynamic Rules / 30+ CUD fields",w:{I:5,E:5,B:5},type:"crit"},{cat:"Scale",q:"More than 10 portals / complex course or portal licensing",w:{I:2,E:8,B:8},type:"crit"},{cat:"eCommerce",q:"Complex eCommerce pricing model — subscriptions, geo-specific",w:{I:8,E:8,B:8},type:"crit"},{cat:"eCommerce",q:"Unsupported eCommerce payments — payment gateway, Pay with PO",w:{I:8,E:8,B:8},type:"crit"},{cat:"External Focus",q:"Complex billing / finance processes related to LMS",w:{I:8,E:8,B:8},type:"crit"},{cat:"Existing Solution",q:"Using Custom or Legacy LMS",w:{I:3,E:3,B:3},type:"crit"},{cat:"Social",q:"Deep community feature requirements",w:{I:5,E:5,B:5},type:"crit"},{cat:"Social",q:"Sharing badges or gamification on social platforms",w:{I:5,E:5,B:5},type:"crit"},{cat:"Pain",q:"Prospect has clearly identified pain that LearnUpon can solve",w:{I:10,E:10,B:10},type:"pain"},]}
 };
 
-const NEXT_STEPS={
-  Discovery_NotRisky:     ["Schedule Tech Discovery call","Schedule initial Demo","Make executive connection"],
-  Discovery_Risky:        ["Discuss with Sales Manager & SE Manager","Open up about gaps — test willingness to adapt","Deep dive on specific gap areas","Discuss gaps with Product team","Gather workarounds from SA / SE / CX"],
-  Discovery_VeryRisky:    ["Escalate: Discuss with Tommy / Laura / Des","Consider No-Go — pull out of process","Deep dive on gaps to confirm severity"],
-  Demo_NotRisky:          ["Engage senior stakeholders","Propose Trial","Plan Deeper Discovery or Demo"],
-  Demo_Risky:             ["Be explicit about gaps — test willingness to adapt","Deep dive into specific gap(s)","Discuss gap roadmap with Product","Organise follow-up with PM for gap area"],
-  Demo_VeryRisky:         ["List all gaps and get prioritisation","Discuss No-Go with Tommy / Des","Deep dive to validate severity","Set call with prospect and SE leadership"],
-  DeepDiscovery_NotRisky: ["Schedule Deep Dive Demo","Tailor demo to workflows identified","Make executive connection","Move to Trial"],
-  DeepDiscovery_Risky:    ["Review gaps with Product — understand roadmap","Present workarounds to prospect","Schedule Product roadmap call","Share gaps — get prioritisation","Refocus on pains LearnUpon solves today"],
-  DeepDiscovery_VeryRisky:["Go/No-Go decision with Sales & Product leadership","Explore partnership route if viable","Formulate product asks — evaluate options"],
-  DeepDemo_NotRisky:      ["Push for product win confirmation","Set up customer references","Ask for the Sale"],
-  DeepDemo_Risky:         ["Complexity review from Steve McC","Share gaps — get prioritisation","Confirm product commitments in writing","Validate solution solves core pains"],
-  DeepDemo_VeryRisky:     ["Urgent complexity review from Steve McC","Share gaps — get prioritisation","Confirm commitments in writing","Escalate to Steve McC & CX Leadership"],
-  Trial_NotRisky:         ["Push for product win","Set up references","Ask for the Sale"],
-  Trial_Risky:            ["Complexity review from Steve McC","Share gaps — get prioritisation","Validate solution solves core pains"],
-  Trial_VeryRisky:        ["Urgent complexity review from Steve McC","Share gaps — get prioritisation","Escalate to Steve McC & CX Leadership"],
-  Validation_NotRisky:    ["Confirm product win","Confirm LearnUpon solves key pains","Ask for the Sale","Ensure MAP is in place and on track"],
-  Validation_Risky:       ["Complexity review from Steve McC","Share gaps — get prioritisation","Validate solution solves core pains"],
-  Validation_VeryRisky:   ["Urgent escalation: Steve McC & CX Leadership","Share gaps — get prioritisation","Validate solution solves core pains"],
+const NEXT_STEPS = {
+  Discovery_NotRisky: ["Schedule Tech Discovery call","Schedule initial Demo","Make executive connection"],
+  Discovery_Risky: ["Discuss with Sales Manager & SE Manager","Open up about gaps — test adaptability","Deep dive on specific gap areas","Discuss gaps with Product team","Gather workarounds from SA/CX"],
+  Discovery_VeryRisky: ["Escalate: Discuss with Tommy / Laura / Des","Consider No-Go","Deep dive to confirm gap severity"],
+  Demo_NotRisky: ["Engage senior stakeholders","Propose Trial","Plan Deeper Discovery or Demo"],
+  Demo_Risky: ["Be explicit about gaps — test adaptability","Deep dive into specific gap(s)","Discuss gap roadmap with Product","Organise PM follow-up for gap area"],
+  Demo_VeryRisky: ["List all gaps and get prioritisation","Discuss No-Go with Leadership","Deep dive to validate severity","Call with prospect and SE leadership"],
+  DeepDiscovery_NotRisky: ["Schedule Deep Dive Demo","Tailor demo to workflows identified","Make executive connection","Move to Trial"],
+  DeepDiscovery_Risky: ["Review gaps with Product roadmap","Present known workarounds","Schedule Product roadmap call","Share gaps — get prioritisation","Refocus conversation on solvable pains"],
+  DeepDiscovery_VeryRisky: ["Go/No-Go decision with Sales & Product leadership","Explore partnership route if viable","Formulate product asks — evaluate development"],
+  DeepDemo_NotRisky: ["Push hard for product win confirmation","Set up customer references","Ask for the Sale"],
+  DeepDemo_Risky: ["Complexity review from Steve McC","Share gaps — get prioritisation","Confirm any commitments in writing","Validate solution solves core pains"],
+  DeepDemo_VeryRisky: ["Get Steve McC review immediately","Share gaps — get prioritisation","Confirm commitments in writing","Escalate to Steve McC & CX Leadership"],
+  Trial_NotRisky: ["Push hard for product win","Set up customer references","Ask for the Sale"],
+  Trial_Risky: ["Complexity review from Steve McC","Share gaps — get prioritisation","Validate solution solves core pains"],
+  Trial_VeryRisky: ["Get Steve McC review immediately","Share gaps — get prioritisation","Escalate to Steve McC & CX Leadership"],
+  Validation_NotRisky: ["Confirm product win","Confirm standard pain sign-off","Ask for the Sale","Ensure MAP is in place"],
+  Validation_Risky: ["Complexity review from Steve McC","Share gaps — get prioritisation","Validate solution solves core pains"],
+  Validation_VeryRisky: ["Steve McC review urgently","Escalate to Tommy/CX Leadership","Validate solution solves core pains"],
 };
 
-// ── STATE ──
-let step=1, selectedTypes=[], currentTab=null, answers={employee:{},customer:{},member:{}}, curMsgMode='slack';
-
-// ── HELPERS ──
 const $=id=>document.getElementById(id);
-const getUC=()=>$('useCase').value;
-const getStage=()=>$('dealStage').value;
-const getUCLabel=()=>({I:'Internal',E:'External',B:'Both',M:'Membership'})[getUC()];
+
+// derivate I/E/B weights automatically from selected type(s)
+const getDeriveWt = () => {
+    if (!selectedTypes || !selectedTypes.length) return 'I';
+    const primary = selectedTypes[0];
+    const lm = {employee:'I', customer:'E', member:'B'};
+    return lm[primary];
+}
+
+// Derive use case labels for top bar / export
+const getUCLabel = () => {
+  if (!selectedTypes || !selectedTypes.length) return 'TBC';
+  const primary = selectedTypes[0];
+  const lm = {employee:'Internal', customer:'External', member:'Memberships'};
+  let res = lm[primary];
+  if(selectedTypes.length > 1) res += ' +';
+  return res;
+}
+
+const saveData = () => {
+    const data = { se:$('seName').value, stage:$('dealStage').value, company:$('prospectName').value, learners:$('learnerCount').value, industry:$('industry').value, selectedTypes, currentTab, answers };
+    localStorage.setItem('lu_scorecard_data_sai', JSON.stringify(data));
+}
+
 function scoreAns(a,t){if(t==='pain')return a==='Yes'?1:a==='No'?-3:0;if(a==='Critical')return -3;if(a==='Not Needed')return 1;if(a==='Nice-to-Have')return -1;return 0;}
-function tabScore(k){const uc=getUC();return TABS[k].rows.reduce((s,r,i)=>{const a=answers[k][i]!==undefined?answers[k][i]:"Don't Know";return s+(r.w[uc]||0)*scoreAns(a,r.type);},0);}
+function tabScore(k){const dw=getDeriveWt();return TABS[k].rows.reduce((s,r,i)=>{const a=answers[k][i]!==undefined?answers[k][i]:"Don't Know";return s+(r.w[dw]||0)*scoreAns(a,r.type);},0);}
 function totalScore(){return selectedTypes.reduce((s,t)=>s+tabScore(t),0);}
 function risk(s){return s>=0?'green':s>=-100?'amber':'red';}
-function riskInfo(s){if(s>=0)return{label:'Not Risky',action:'Go Ahead — strong fit',color:'green'};if(s>=-100)return{label:'Risky',action:'Discuss with Managers before proceeding',color:'amber'};return{label:'Very Risky',action:'Immediate escalation — Tommy / Laura / Des',color:'red'};}
+function riskInfo(s){if(s>=0)return{label:'Not Risky',sub:'Go Ahead',color:'green'};if(s>=-100)return{label:'Risky',sub:'Discuss with Managers',color:'amber'};return{label:'Very Risky',sub:'TOMMY / LAURA / DES',color:'red'};}
 function statusKey(s,stage){const m={'Initial Discovery':'Discovery','Initial Demo':'Demo','Deep Dive Discovery':'DeepDiscovery','Deep Dive Demo':'DeepDemo','Trial':'Trial','Solution Validation':'Validation'};const st=m[stage]||'Demo';return`${st}_${s>=0?'NotRisky':s>=-100?'Risky':'VeryRisky'}`;}
 
-// ── NAVIGATION ──
-function showStep(n){
-  ['step1','step2','step3'].forEach((id,i)=>{$(id).style.display=i+1===n?'grid':'none';});
-  step=n;
-  [1,2,3,4].forEach(i=>{
-    const d=$('wd'+i),l=$('wl'+i);
-    d.className='wdot'+(i<n?' done':i===n?' active':'');
-    d.textContent=i<n?'✓':i;
-    if(l)l.className='wline'+(i<n?' done':'');
-  });
-  $('pageSub').textContent=n===1?'Enter deal details':n===2?'Scoring — '+( currentTab?TABS[currentTab].label:''):'Assessment complete';
+let currentTab=null, curMsgMode='slack', answers={employee:{},customer:{},member:{}}, selectedTypes=[], step=1;
+
+const navTo = (n) => {
+    ['step1-panel','step2-panel','step3-panel'].forEach((id,i)=>{
+        $(id).style.display = (i+1 === n) ? (id==='step3-panel'?'grid':'grid') : 'none';
+    });
+    [1,2,3,4].forEach(i=>{
+        const dot=$('wd'+i), l=$('wl'+i);
+        dot.className = 'wdot'+(i<n?' done':i===n?' active':'');
+        if(i<n)dot.textContent='✓'; else dot.textContent=i;
+        if(l)l.className = 'wline'+(i<n?' done':'');
+    });
+    step=n;
 }
-function goStep1(){showStep(1);}
+
+// ── STEP NAVIGATION ──
+function goStep1(){
+  if(!$('prospectName').value.trim()){showToast('Please enter prospect details on left');return;}
+  if(!$('seName').value){showToast('Please select your SE name');return;}
+  navTo(1);
+}
 function goStep2(){
-  if(!$('prospectName').value.trim()){showToast('Please enter a prospect name');return;}
-  showStep(1); // keep on step 1 grid but advance wizard dot (step 2 is same grid as step 1)
-  // Actually step 1 grid has both details + deal type, so "step 2" in UX terms is just scrolling right
-  // We use the right card as the deal type panel — already visible
-  // Real navigation: step1=details+dealtype, step2=scoring, step3=results
-  // Remap: just proceed if deal type selected
-  if(!selectedTypes.length){showToast('Select a deal type on the right');return;}
-  buildTabs(); renderRows(); recompute();
-  showStep(2);
+  if(!$('prospectName').value.trim()){showToast('Please enter prospect details on left');return;}
+  if(!$('seName').value){showToast('Please select your SE name');return;}
+  // Actually just ensures a deal type is picked on the same panel
+  const btn = $('step2Next');
+  if(btn.classList.contains('btn-disabled')){showToast('Please pick a primary use case on the right');}
 }
 function goStep3(){
-  if(!selectedTypes.length){showToast('Select a deal type first');return;}
-  buildTabs(); renderRows(); recompute();
-  showStep(2);
+  if(!selectedTypes.length){showToast('Select primary deal use case');return;}
+  buildTabs(); renderRows(); recompute(); navTo(2);
 }
-function goStep4(){buildResults();showStep(3);}
-function restart(){
-  selectedTypes=[];currentTab=null;answers={employee:{},customer:{},member:{}};
-  ['employee','customer','member'].forEach(t=>$('dc-'+t).classList.remove('selected'));
-  $('s2Btn').classList.add('btn-disabled');
-  $('alsoRow').style.display='none';
-  $('alsoCheck').checked=false;
-  showStep(1);
-}
+function goStep4(){ buildResults(); navTo(3); }
+function restart(){ localStorage.removeItem('lu_scorecard_data_sai'); location.reload(); }
 
 // ── TOP BAR ──
 function updateTopBar(){
-  const se=$('seName').value||'—'; const stage=getStage()||'—'; const uc=getUCLabel()||'—';
-  $('fc-se-val').textContent=se.split(' ')[0];
-  $('fc-stage-val').textContent=stage;
-  $('fc-uc-val').textContent=uc;
-  const init=se&&se!=='—'?se[0].toUpperCase():'?';
-  $('userAvatar').textContent=init;
+  const se=$('seName').value||'—'; const stage=$('dealStage').value; const uc=getUCLabel();
+  $('fc-se-val').textContent=se.split(' ')[0];
+  $('fc-stage-val').textContent=stage;
+  $('fc-uc-val').textContent=uc;
+  const init=se!=='—'&&se?se[0].toUpperCase():'?';
+  $('userAvatar').textContent=init;
+  $('saiDialUC').textContent = getDeriveWt();
 }
 
 // ── DEAL TYPE ──
-function toggleDeal(type){
-  ['employee','customer','member'].forEach(t=>$('dc-'+t).classList.remove('selected'));
-  $('dc-'+type).classList.add('selected');
-  selectedTypes=[type];
-  $('alsoCheck').checked=false;
-  const others=['employee','customer','member'].filter(t=>t!==type);
-  const lm={employee:'Employee Training',customer:'Customer Education',member:'Member / Association'};
-  $('alsoLabel').textContent=others.map(o=>lm[o]).join(' + ');
-  $('alsoRow').style.display='flex';
-  const btn=$('s2Btn'); btn.classList.remove('btn-disabled');
-  currentTab=type;
+function toggleDealType(type){
+  ['employee','customer','member'].forEach(t=>$('dc-'+t).classList.remove('selected'));
+  $('dc-'+type).classList.add('selected');
+  selectedTypes=[type];
+  $('alsoCheck').checked=false;
+  const others=['employee','customer','member'].filter(t=>t!==type);
+  const lm={employee:'Employee Training',customer:'Customer Education',member:'Member / Association'};
+  $('alsoLabel').textContent=others.map(o=>lm[o]).join(' + ');
+  $('alsoRow').style.display='flex';
+  const btn=$('step2Next'); btn.classList.remove('btn-disabled');
+  currentTab=type; saveData();
 }
 function toggleAlso(){
-  const others=['employee','customer','member'].filter(t=>t!==selectedTypes[0]);
-  selectedTypes=$('alsoCheck').checked?[selectedTypes[0],...others]:[selectedTypes[0]];
+  const others=['employee','customer','member'].filter(t=>t!==selectedTypes[0]);
+  selectedTypes=$('alsoCheck').checked?[selectedTypes[0],...others]:[selectedTypes[0]];
+  saveData();
 }
 
 // ── TABS ──
 function buildTabs(){
-  const bar=$('formTabs');
-  if(selectedTypes.length<=1){bar.innerHTML='';return;}
-  bar.innerHTML=selectedTypes.map(t=>{
-    const s=tabScore(t); const cv={green:'var(--lime)',amber:'var(--orange)',red:'var(--red)'}[risk(s)];
-    return`<button class="ftab${t===currentTab?' active':''}" onclick="switchTab('${t}')">
-      ${TABS[t].label}
-      <span class="ftab-score" style="${t===currentTab?'':'color:'+cv}">${s}</span>
-    </button>`;
-  }).join('');
+  const bar=$('formTabs');
+  if(selectedTypes.length<=1){bar.innerHTML='';return;}
+  bar.innerHTML=selectedTypes.map(t=>{
+    const s=tabScore(t); const cv={green:'var(--green)',amber:'var(--amber)',red:'var(--red)'}[risk(s)];
+    return`<button class="ftab${t===currentTab?' active':''}" onclick="switchTab('${t}')">
+      ${TABS[t].icon} ${TABS[t].label}
+      <span class="ftab-score" style="${t===currentTab?'':'color:'+cv}">${s}</span>
+    </button>`;
+  }).join('');
 }
 function switchTab(t){currentTab=t;buildTabs();renderRows();recompute();}
 
 // ── RENDER ROWS ──
 function renderRows(){
-  const uc=getUC(), rows=TABS[currentTab].rows, ans=answers[currentTab];
-  const groups=[]; rows.forEach((row,i)=>{const l=groups[groups.length-1];if(!l||l.cat!==row.cat)groups.push({cat:row.cat,items:[]});groups[groups.length-1].items.push({row,i});});
-  let html='';
-  groups.forEach(g=>{
-    html+=`<div class="cat-label">${g.cat}</div>`;
-    g.items.forEach(({row,i})=>{
-      const a=ans[i]!==undefined?ans[i]:"Don't Know";
-      const w=row.w[uc]||0, s=scoreAns(a,row.type), ws=w*s;
-      const wsc=ws>0?'pos':ws<0?'neg':'zero';
-      const sc=a==='Critical'?'critical':a==='Not Needed'?'not-needed':a==='Nice-to-Have'?'nice':'';
-      const opts=(row.type==='pain'?["Don't Know","Yes","No"]:["Don't Know","Critical","Not Needed","Nice-to-Have"]).map(o=>`<option value="${o}"${a===o?' selected':''}>${o}</option>`).join('');
-      html+=`<div class="srow">
-        <div class="srow-q">${row.q}</div>
-        <div class="srow-select"><select class="${sc}" onchange="setAns('${currentTab}',${i},this.value)">${opts}</select></div>
-        <div class="srow-w">${w>0?w:'—'}</div>
-        <div class="srow-ws ${wsc}">${ws!==0?(ws>0?'+':'')+ws:'—'}</div>
-      </div>`;
-    });
-  });
-  $('rowsContainer').innerHTML=html;
+  const uc=getDeriveWt(), rows=TABS[currentTab].rows, ans=answers[currentTab];
+  const groups=[]; rows.forEach((row,i)=>{const l=groups[groups.length-1];if(!l||l.cat!==row.cat)groups.push({cat:row.cat,items:[]});groups[groups.length-1].items.push({row,i});});
+  let html='';
+  groups.forEach(g=>{
+    html+=`<div class="form-cat-label">${g.cat}</div>`;
+    g.items.forEach(({row,i})=>{
+      const a=ans[i]!==undefined?ans[i]:"Don't Know";
+      const w=row.w[uc]||0, s=scoreAns(a,row.type), ws=w*s;
+      const wsc=ws>0?'pos':ws<0?'neg':'zero';
+      const sc=a==='Critical'?'critical':a==='Not Needed'?'not-needed':a==='Nice-to-Have'?'nice':'';
+      const opts=(row.type==='pain'?["Don't Know","Yes","No"]:["Don't Know","Critical","Not Needed","Nice-to-Have"]).map(o=>`<option value="${o}"${a===o?' selected':''}>${o}</option>`).join('');
+      html+=`<div class="srow">
+        <div class="srow-q">${row.q}</div>
+        <div class="srow-select field"><select class="${sc}" onchange="setAns('${currentTab}',${i},this.value)">${opts}</select></div>
+        <div class="srow-ws colhead-wt">${w>0?w:'—'}</div>
+        <div class="srow-ws colhead-ws ${wsc}">${ws!==0?(ws>0?'+':'')+ws:'—'}</div>
+      </div>`;
+    });
+  });
+  $('rowsContainer').innerHTML=html;
 }
-function setAns(tab,i,val){answers[tab][i]=val;if(tab===currentTab)renderRows();buildTabs();recompute();}
+function setAns(tab,i,val){answers[tab][i]=val;if(tab===currentTab)renderRows();buildTabs();recompute();saveData();}
 
 // ── RECOMPUTE ──
 function recompute(){
-  const uc=getUC(), score=tabScore(currentTab), rows=TABS[currentTab].rows;
-  const min=rows.reduce((a,r)=>a+(r.w[uc]||0)*-3,0);
-  const max=rows.reduce((a,r)=>a+(r.w[uc]||0)*1,0);
-  const pct=((score-min)/(max-min||1))*100;
-  const r=risk(score), info=riskInfo(score);
-  const cv=r==='green'?'var(--lime)':r==='amber'?'var(--orange)':'var(--red)';
+  const uc=getDeriveWt(), score=tabScore(currentTab), rows=TABS[currentTab].rows;
+  const min=rows.reduce((a,r)=>a+(r.w[uc]||0)*-3,0);
+  const max=rows.reduce((a,r)=>a+(r.w[uc]||0)*1,0);
+  const pct=((score-min)/(max-min||1))*100;
+  const r=risk(score), info=riskInfo(score);
+  const cv=r==='green'?'var(--green)':r==='amber'?'var(--amber)':'var(--red)';
 
-  // Score display
-  $('scoreBig').textContent=score; $('scoreBig').style.color=cv;
-  $('scoreBadge').className=`score-badge ${r}`;
-  $('scoreBadge').innerHTML=`<div class="score-badge-dot"></div><span>${info.label}</span>`;
-  $('scoreStage').textContent=getStage();
-  $('mFill').style.cssText=`width:${Math.max(1,pct)}%;background:${cv}`;
-  $('mMin').textContent=min; $('mMax').textContent=max;
-  $('mRange').textContent=`${score} · range ${min}→${max}`;
+  // Score hero
+  $('scoreBig').textContent=score; $('scoreBig').style.color=cv;
+  $('scoreBadge').className=`score-badge ${r}`;
+  $('scoreBadge').innerHTML=`<div class="score-badge-dot"></div><span>${info.label}</span>`;
+  $('scoreStage').innerHTML=`${$('dealStage').value} — ${TABS[currentTab].label} <span class="red">${riskInfo(score).sub}</span>`;
+  $('mFill').style.cssText=`width:${Math.max(1,pct)}%;background:${cv}`;
+  $('mFill').innerHTML = `<div class="cat-bar-bubble">${score}</div>`;
+  $('mMin').textContent=min; $('mMax').textContent=max;
+  $('mRange').textContent=`range`;
+  $('sFooterScore').textContent = totalScore();
 
-  // Category bars
-  const catMap={};
-  rows.forEach((row,i)=>{
-    const a=answers[currentTab][i]!==undefined?answers[currentTab][i]:"Don't Know";
-    catMap[row.cat]=(catMap[row.cat]||0)+(row.w[uc]||0)*scoreAns(a,row.type);
-  });
-  const cats=Object.entries(catMap);
-  const absMax=Math.max(...cats.map(([,v])=>Math.abs(v)),1);
-  $('catBars').innerHTML=cats.map(([cat,val])=>{
-    const pct2=Math.round(Math.abs(val)/absMax*100);
-    const cls=val>0?'pos':val<0?'neg':'zero';
-    return`<div class="cat-bar-row ${cls}">
-      <div class="cat-bar-label" title="${cat}">${cat}</div>
-      <div class="cat-bar-track">
-        <div class="cat-bar-fill" style="width:${pct2}%">
-          <div class="cat-bar-bubble">${val>0?'+':''}${val}</div>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
+  // Category Lollipop bars (Step 2)
+  const catMap={};
+  rows.forEach((row,i)=>{const a=answers[currentTab][i]!==undefined?answers[currentTab][i]:"Don't Know";catMap[row.cat]=(catMap[row.cat]||0)+(row.w[uc]||0)*scoreAns(a,row.type);});
+  const cats=Object.entries(catMap);
+  const absMax=Math.max(...cats.map(([,v])=>Math.abs(v)),1);
+  $('catBars').innerHTML=cats.map(([cat,val])=>{
+    const pct2=Math.round(Math.abs(val)/absMax*100);
+    const cls=val>0?'pos':val<0?'neg':'zero';
+    return`<div class="cat-bar-row ${cls}">
+      <div class="cat-bar-label" title="${cat}">${cat}</div>
+      <div class="cat-bar-track-wrap"><div class="cat-bar-fill" style="width:${pct2}%"><div class="cat-bar-bubble">${val>0?'+':''}${val}</div></div></div>
+    </div>`;
+  }).join('');
 
-  // Steps preview bars
-  const key=statusKey(score,getStage());
-  const steps=NEXT_STEPS[key]||[];
-  const stepColor=r==='green'?'green':r==='amber'?'amber':'red';
-  // Stagger bar widths from 100% down to ~55% for visual variety
-  $('stepsBars').innerHTML=steps.map((s,i)=>{
-    const w2=Math.max(55,100-i*8);
-    return`<div class="step-bar">
-      <div class="step-num">${String(i+1).padStart(2,'0')}</div>
-      <div class="step-fill-wrap">
-        <div class="step-fill ${stepColor}" style="width:${w2}%;animation-delay:${i*0.06}s">${s}</div>
-      </div>
-    </div>`;
-  }).join('');
+  // Project Next steps bars (Step 2)
+  const key=statusKey(score,$('dealStage').value);
+  const steps=NEXT_STEPS[key]||[];
+  const stepColor=r==='green'?'green':r==='amber'?'amber':'red';
+  $('stepsBars').innerHTML=steps.map((s,i)=>{
+    const w2=Math.max(55,100-i*8); // stagger bars visually
+    return`<div class="step-bar">
+      <div class="step-num">${String(i+1).padStart(2,'0')}</div>
+      <div class="step-fill-wrap"><div class="step-fill ${stepColor}" style="width:${w2}%">${s}</div></div>
+    </div>`;
+  }).join('');
 }
 
 // ── RESULTS ──
 function buildResults(){
-  const stage=getStage(), tot=totalScore(), r=risk(tot), info=riskInfo(tot);
-  const cv=r==='green'?'var(--lime)':r==='amber'?'var(--orange)':'var(--red)';
+  const stage=$('dealStage').value, tot=totalScore(), r=risk(tot), info=riskInfo(tot);
+  const cv=r==='green'?'var(--green)':r==='amber'?'var(--amber)':'var(--red)';
 
-  // Hero
-  $('rBig').textContent=tot; $('rBig').style.color=cv;
-  $('rBadge').className=`result-badge ${r}`;
-  $('rBadge').innerHTML=`<div class="result-badge-dot"></div><span>${info.label.toUpperCase()}</span>`;
-  $('rAction').textContent=info.action;
-  $('rDate').textContent=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  // Hero Date massive number style
+  $('rBig').textContent=tot; $('rBig').style.color=cv;
+  const critsCount = selectedTypes.flatMap(t=>TABS[t].rows.filter((r,i)=>answers[t][i]==='Critical')).length;
+  $('rRisks').textContent = critsCount > 0 ? `${critsCount}Crit` : 'Rs';
+  
+  $('rBadge').className=`result-badge ${r}`;
+  $('rBadge').innerHTML=`<div class="result-badge-dot"></div><span>${info.label.toUpperCase()}</span>`;
+  $('rStage').innerHTML=`${stage} — <span class="red">${info.sub}</span>`;
+  $('rDate').textContent=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
 
-  // Urgency
-  $('rUrgency').innerHTML=r==='amber'
-    ?`<div class="urgency amber"><div class="urgency-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div class="urgency-text"><strong>Action required before next interaction</strong>Review next steps and discuss with your Sales Manager.</div></div>`
-    :r==='red'
-    ?`<div class="urgency red"><div class="urgency-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="urgency-text"><strong>Immediate escalation — do not proceed alone</strong>Discuss with Tommy / Laura / Des before next prospect interaction.</div></div>`
-    :'';
+  // Urgency Bento (Yellow card style)
+  const uBento = $('rUrgency');
+  if(r!=='green'){
+    uBento.style.display = 'flex';
+    $('ubHuge').textContent = critsCount > 0 ? `${critsCount}` : tot;
+    $('ubMsg').textContent = r==='amber' ? `This deal has notable complexity risks. Discuss roadmap gaps or workflow adaptation with your manager before your next prospect interaction.` : `🚩 Escalation required. Do not proceed to the next stage alone. Critical gaps detected — Tommy / Laura / Des must review immediate strategy.`;
+  } else { uBento.style.display = 'none'; }
 
-  // Mini scores
-  $('miniScores').innerHTML=selectedTypes.map(t=>{
-    const s=tabScore(t);const ri=riskInfo(s);const rcv={green:'var(--lime)',amber:'var(--orange)',red:'var(--red)'}[risk(s)];
-    return`<div class="mini-score"><div class="ms-label">${TABS[t].label}</div><div class="ms-num" style="color:${rcv}">${s}</div><div class="ms-status" style="color:${rcv}">${ri.label}</div></div>`;
-  }).join('')+(selectedTypes.length>1?`<div class="mini-score" style="border-color:var(--lime)"><div class="ms-label">Combined</div><div class="ms-num" style="color:${cv}">${tot}</div><div class="ms-status" style="color:${cv}">${info.label}</div></div>`:'');
+  // Mini Scores Bento
+  $('miniScores').innerHTML=selectedTypes.map(t=>{
+    const s=tabScore(t);const rj=riskInfo(s);const rcv={green:'var(--green)',amber:'var(--amber)',red:'var(--red)'}[risk(s)];
+    return`<div class="mini-score"><div class="ms-label">${TABS[t].icon} ${TABS[t].label}</div><div class="ms-num" style="color:${rcv}">${s}</div><div class="ms-status" style="color:${rcv}">${rj.label}</div></div>`;
+  }).join('');
 
-  // Confetti
-  const cw=$('confettiWrap');
-  cw.innerHTML='';
-  if(r==='green'){
-    const cols=['#a8e63d','#ff6b1a','#fff','#a8e63d','#a8e63d'];
-    for(let i=0;i<18;i++){
-      const d=document.createElement('div');
-      d.className='cpiece';
-      d.style.cssText=`left:${Math.random()*100}%;background:${cols[i%cols.length]};animation-delay:${Math.random()*1.2}s;animation-duration:${2+Math.random()}s`;
-      cw.appendChild(d);
-    }
-  }
+  // Confetti (Results only)
+  const cw=$('confettiWrap'); cw.innerHTML='';
+  if(r==='green'){
+    const cols=['#a8e63d','#ff6b1a','#fff','#000','#dddad2'];
+    for(let i=0;i<20;i++){const d=document.createElement('div');d.className='cpiece';d.style.cssText=`left:${Math.random()*100}%;background:${cols[i%cols.length]};animation-delay:${Math.random()*1.2}s`;cw.appendChild(d);}
+  }
 
-  // Category bars (results)
-  const uc=getUC();
-  const allCats={};
-  selectedTypes.forEach(t=>TABS[t].rows.forEach((row,i)=>{
-    const a=answers[t][i]!==undefined?answers[t][i]:"Don't Know";
-    allCats[row.cat]=(allCats[row.cat]||0)+(row.w[uc]||0)*scoreAns(a,row.type);
-  }));
-  const cats2=Object.entries(allCats).sort(([,a],[,b])=>a-b);
-  const absMax2=Math.max(...cats2.map(([,v])=>Math.abs(v)),1);
-  $('rCatBars').innerHTML=cats2.map(([cat,val])=>{
-    const pct2=Math.round(Math.abs(val)/absMax2*100);
-    const cls=val>0?'pos':val<0?'neg':'zero';
-    return`<div class="cat-bar-row ${cls}">
-      <div class="cat-bar-label" title="${cat}">${cat}</div>
-      <div class="cat-bar-track" style="margin-right:20px">
-        <div class="cat-bar-fill" style="width:${pct2}%">
-          <div class="cat-bar-bubble">${val>0?'+':''}${val}</div>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-  $('rCatLegend').innerHTML=`<div class="legend-item"><div class="legend-dot" style="background:var(--lime)"></div>Positive</div><div class="legend-item"><div class="legend-dot" style="background:var(--orange)"></div>Risk</div><span style="margin-left:auto;font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">Total: <strong style="color:var(--text)">${tot}</strong></span>`;
+  // Category Bars Results Bento (Lolliops)
+  const uc=getDeriveWt();
+  const allCats={}; selectedTypes.forEach(t=>TABS[t].rows.forEach((row,i)=>{const a=answers[t][i]!==undefined?answers[t][i]:"Don't Know";allCats[row.cat]=(allCats[row.cat]||0)+(row.w[uc]||0)*scoreAns(a,row.type);}));
+  const cats2=Object.entries(allCats);
+  const absMax2=Math.max(...cats2.map(([,v])=>Math.abs(v)),1);
+  $('rCatBars').innerHTML=cats2.map(([cat,val])=>{
+    const pct2=Math.round(Math.abs(val)/absMax2*100);
+    const cls=val>0?'pos':val<0?'neg':'zero';
+    return`<div class="cat-bar-row ${cls}">
+      <div class="cat-bar-label" title="${cat}">${cat}</div>
+      <div class="cat-bar-track-wrap"><div class="cat-bar-fill" style="width:${pct2}%"><div class="cat-bar-bubble">${val>0?'+':''}${val}</div></div></div>
+    </div>`;
+  }).join('');
 
-  // Steps bars (results)
-  const primaryScore=tabScore(selectedTypes[0]);
-  const key=statusKey(primaryScore,stage);
-  const steps=NEXT_STEPS[key]||[];
-  const sc=risk(primaryScore);
-  $('rStepsTitle').textContent=`Next Steps — ${stage}`;
-  $('rStepsBars').innerHTML=steps.map((s,i)=>{
-    const w2=Math.max(55,100-i*8);
-    return`<div class="step-bar">
-      <div class="step-num">${String(i+1).padStart(2,'0')}</div>
-      <div class="step-fill-wrap">
-        <div class="step-fill ${sc}" style="width:${w2}%;animation-delay:${i*0.07}s">${s}</div>
-      </div>
-    </div>`;
-  }).join('');
+  // Timeline Next Steps Bento (Results)
+  const primaryScore=tabScore(selectedTypes[0]);
+  const key=statusKey(primaryScore,stage);
+  const steps=NEXT_STEPS[key]||[];
+  const sc=risk(primaryScore);
+  $('rStepsTitle').textContent=`Next Steps Timeline — ${stage}`;
+  $('rStepsBars').innerHTML=steps.map((s,i)=>{
+    const w2=Math.max(55,100-i*8);
+    return`<div class="step-bar">
+      <div class="step-num">${String(i+1).padStart(2,'0')}</div>
+      <div class="step-fill-wrap"><div class="step-fill ${sc}" style="width:${w2}%">${s}</div></div>
+    </div>`;
+  }).join('');
 
-  // Messages
-  buildMsgs(steps, info, tot, stage);
+  // Populate messages Bento
+  buildMsgs(steps, info, tot, stage);
 }
 
 function buildMsgs(steps, info, tot, stage){
-  const name=$('prospectName').value||'Prospect';
-  const se=$('seName').value||'SE';
-  const uc=getUCLabel(); const lc=$('learnerCount').value||'TBC'; const ind=$('industry').value||'TBC';
-  const date=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
-  const scoreLines=selectedTypes.map(t=>`  ${TABS[t].label}: ${tabScore(t)} (${riskInfo(tabScore(t)).label})`).join('\n');
-  const crits=[];
-  selectedTypes.forEach(t=>TABS[t].rows.forEach((r,i)=>{if(answers[t][i]==='Critical')crits.push(`  - [${TABS[t].label}] ${r.q}`);}));
-  const stepsText=steps.map((s,i)=>`  ${i+1}. ${s}`).join('\n');
-  window._slack=`*LearnUpon Deal Complexity — ${name}*
-SE: ${se}  |  Stage: ${stage}  |  Date: ${date}
+  const name=$('prospectName').value||'Prospect'; const se=$('seName').value||'SE';
+  const luc=$('learnerCount').value||'TBC'; const ind=$('industry').value||'TBC';
+  const date=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  const scoreLines=selectedTypes.map(t=>`• ${TABS[t].label}: ${tabScore(t)} (${riskInfo(tabScore(t)).label})`).join('\n');
+  const crits=[]; selectedTypes.forEach(t=>TABS[t].rows.forEach((r,i)=>{if(answers[t][i]==='Critical')crits.push(`🚩 [${TABS[t].label}] ${r.q}`);}));
+  const stepsText=steps.map((s,i)=>`${i+1}. ${s}`).join('\n');
+  window._slack=`*Deal Complexity Update: ${name}*
+Assessed by: ${se} | Stage: ${stage} | Date: ${date}
 
-*Status: ${info.label.toUpperCase()}*  (Score: ${tot})
-Use Case: ${uc}  |  Learners: ${lc}  |  Industry: ${ind}
+*OVERALL STATUS: ${info.label.toUpperCase()}* (Combined Score: ${tot})
+Industry: ${ind} | Learners: ${luc} | Derive Wt: ${getDeriveWt()}
 
-*Score Breakdown:*
+*Scorecard Breakdown:*
 ${scoreLines}
-${crits.length?'\n*Critical Requirements:*\n'+crits.join('\n')+'\n':''}
-*Next Steps for ${stage}:*
-${stepsText}`;
-  window._email=`Subject: LearnUpon Complexity Assessment — ${name} [${info.label}]
+${crits.length?'\n*Critical Requirements Identified:*\n'+crits.join('\n')+'\n':''}
+*Suggested Next Steps:*
+${stepsText}
 
-Hi,
+🔗 Generated via LearnUpon Deal Complexity Work OS`;
+  window._email=`Subject: Deal Complexity Assessment — ${name} [${info.label}]
 
-Complexity assessment for ${name} — ${stage}.
+Hi team,
 
-OVERALL STATUS: ${info.label.toUpperCase()}
-Score: ${tot}  |  SE: ${se}  |  Date: ${date}
-Use Case: ${uc}  |  Learners: ${lc}  |  Industry: ${ind}
+Here is the complexity assessment for ${name}.
+
+Prospect: ${name} | Stage: ${stage}
+SE: ${se} | Date: ${date}
+
+OVERALL STATUS: ${info.label.toUpperCase()} (Score: ${tot})
+Industry: ${ind} | Learners: ${luc} | Weighting: ${getUC()}
 
 SCORE BREAKDOWN:
 ${scoreLines}
-${crits.length?'\nCRITICAL REQUIREMENTS:\n'+crits.join('\n')+'\n':'\n'}NEXT STEPS — ${stage}:
+${crits.length?'\nCRITICAL REQUIREMENTS FLAGGED:\n'+crits.join('\n')+'\n':'\n'}SUGGESTED NEXT STEPS:
 ${stepsText}
 
-Best,
+Regards,
 ${se}`;
-  $('msgOut').value=curMsgMode==='slack'?window._slack:window._email;
+  $('msgOut').value=curMsgMode==='slack'?window._slack:window._email;
 }
 
 function switchMsg(mode,btn){
-  curMsgMode=mode;
-  document.querySelectorAll('.mtab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  $('msgOut').value=mode==='slack'?window._slack:window._email;
+  curMsgMode=mode;
+  document.querySelectorAll('#s3-share .mtab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  $('msgOut').value=mode==='slack'?window._slack:window._email;
 }
-function copyMsg(){navigator.clipboard.writeText($('msgOut').value).then(()=>showToast('Copied to clipboard'));}
+function copyMsg(){navigator.clipboard.writeText($('msgOut').value).then(()=>showToast('📋 Copied to clipboard'));}
 
 function exportSheets(){
-  const name=$('prospectName').value||'Prospect';
-  const uc=getUC();
-  const stage=getStage();
-  const tot=totalScore();
-  const info=riskInfo(tot);
-  const rows=[
-    ['LearnUpon Deal Complexity Scorecard'],
-    ['Prospect',name,'SE',$('seName').value,'Date',new Date().toLocaleDateString('en-GB')],
-    ['Industry',$('industry').value||'','Learners',$('learnerCount').value||'','Use Case',getUCLabel()],
-    ['Stage',stage,'Overall',info.label,'Score',tot],
-    [],
-    ['Type','Score','Status'],
-    ...selectedTypes.map(t=>[TABS[t].label,tabScore(t),riskInfo(tabScore(t)).label]),
-    [],
-    ['Category','Requirement','Answer','Weight','Score Multiplier','Weighted Score'],
-    ...selectedTypes.flatMap(t=>TABS[t].rows.map((row,i)=>{
-      const a=answers[t][i]!==undefined?answers[t][i]:"Don't Know";
-      const w=row.w[uc]||0, s=scoreAns(a,row.type);
-      return[row.cat,row.q,a,w,s,w*s];
-    }))
-  ];
-  const csv=rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const a=document.createElement('a');
-  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
-  a.download=`LU_Scorecard_${name.replace(/\s+/g,'_')}.csv`;
-  a.click();
-  setTimeout(()=>window.open('https://sheets.new','_blank'),400);
-  showToast('CSV downloaded — import into the new Google Sheet');
+  const wb = XLSX.utils.book_new();
+  const stage = $('dealStage').value, dw = getDeriveWt();
+  const ucLabel = getUCLabel();
+  const name = $('prospectName').value || 'Prospect';
+  const se = $('seName').value || '';
+  const learners = $('learnerCount').value || '';
+  const industry = $('industry').value || '';
+  const date = new Date().toLocaleDateString('en-GB');
+
+  selectedTypes.forEach(tabKey => {
+    const tab = TABS[tabKey];
+    const rows = tab.rows;
+    const ans = answers[tabKey];
+    const score = tabScore(tabKey);
+    const [rLabel] = Object.values(riskInfo(score));
+    const key = statusKey(score, stage);
+    const steps = NEXT_STEPS[key] || [];
+
+    const data = [['LearnUpon Deal Complexity Scorecard', '', '', '', '', ''],['Prospect:', name, '', 'Assessed by:', se, ''],['Industry:', industry, '', 'Date:', date, ''],['Learner Count:', learners, '', 'Weighting Use Case:', ucLabel, ''],['Deal Stage:', stage, '', '', '', ''],[],['Category', 'Requirement / Feature', 'Assessment', 'Weighting', 'ScoreMultiplier', 'Weighted Score'],];
+    rows.forEach((row, i) => {
+      const answer = ans[i] !== undefined ? ans[i] : "Don't Know";
+      const w = row.w[dw] || 0, s = scoreAns(answer, row.type);
+      data.push([row.cat, row.q, answer, w, s, w*s]);
+    });
+    data.push([], ['', '', '', '', 'TOTAL', score], ['', '', '', '', 'STATUS', rLabel], []);
+    data.push(['Suggested Next Steps for ' + stage]);
+    steps.forEach((s,i) => data.push([`${i+1}.`, s]));
+
+    const ws = XLSX.utils.aoa_to_sheet(data);
+    ws['!cols'] = [{wch:22},{wch:52},{wch:16},{wch:12},{wch:8},{wch:15}];
+    XLSX.utils.book_append_sheet(wb, ws, tab.label.substring(0,31));
+  });
+
+  // Summary sheet
+  const tot = totalScore(); const info = riskInfo(tot);
+  const summaryData = [['LearnUpon Deal Complexity — Summary'],['Prospect:', name, 'SE:', se, 'Date:', new Date().toLocaleDateString('en-GB')],['Stage:', stage, 'Weighting Use Case:', ucLabel],[],['Scorecard Type', 'Score', 'Status'],...selectedTypes.map(t => [TABS[t].label, tabScore(t), riskInfo(tabScore(t)).label]),[],['Combined Total', tot, info.label],];
+  const ws2 = XLSX.utils.aoa_to_sheet(summaryData);
+  ws2['!cols'] = [{wch:25},{wch:12},{wch:20},{wch:20},{wch:10},{wch:20}];
+  XLSX.utils.book_append_sheet(wb, ws2, 'Summary');
+
+  XLSX.writeFile(wb, `LU_Scorecard_${name.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.xlsx`);
+  showToast('✅ Excel downloaded');
 }
 
 function showToast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
 
-// init
-updateTopBar();
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', () => {
+    const saved = localStorage.getItem('lu_scorecard_data_sai');
+    if(saved) {
+        try {
+            const data = JSON.parse(saved);
+            $('seName').value = data.se || '';
+            $('dealStage').value = data.stage || 'Initial Discovery';
+            $('prospectName').value = data.company || '';
+            $('learnerCount').value = data.learners || '';
+            $('industry').value = data.industry || '';
+            answers = data.answers || {employee:{},customer:{},member:{}};
+            selectedTypes = data.selectedTypes || [];
+            currentTab = data.currentTab || null;
+            if(selectedTypes.length){
+                $('dc-'+selectedTypes[0]).classList.add('selected');
+                $('step2Next').classList.remove('btn-disabled');
+            }
+        } catch(e) { console.error(e); localStorage.removeItem('lu_scorecard_data_sai'); }
+    }
+    updateTopBar();
+});
 </script>
 </body>
 </html>
