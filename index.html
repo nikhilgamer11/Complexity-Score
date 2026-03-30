@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LU Complexity Scorecard</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0b;
+    --surface: #111113;
+    --surface2: #18181c;
+    --border: #2a2a30;
+    --text: #e8e8ec;
+    --muted: #6b6b78;
+    --green: #22c55e;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --lu-blue: #3b82f6;
+    --lu-blue-dim: rgba(59,130,246,0.12);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; }
+
+  .header {
+    padding: 18px 28px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface); position: sticky; top: 0; z-index: 100;
+  }
+  .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 17px; letter-spacing: -0.5px; }
+  .logo span { color: var(--lu-blue); }
+
+  .status-badge {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 14px; border-radius: 6px;
+    font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; border: 1px solid;
+    transition: all 0.3s;
+  }
+  .status-badge.green { background: rgba(34,197,94,0.1); border-color: rgba(34,197,94,0.3); color: var(--green); }
+  .status-badge.amber { background: rgba(245,158,11,0.1); border-color: rgba(245,158,11,0.3); color: var(--amber); }
+  .status-badge.red   { background: rgba(239,68,68,0.1);  border-color: rgba(239,68,68,0.3);  color: var(--red); }
+  .status-badge.neutral { background: var(--surface2); border-color: var(--border); color: var(--muted); }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+  .layout { display: grid; grid-template-columns: 250px 1fr 270px; height: calc(100vh - 57px); }
+
+  .left-panel {
+    border-right: 1px solid var(--border); padding: 20px 16px;
+    overflow-y: auto; background: var(--surface);
+    display: flex; flex-direction: column; gap: 20px;
+  }
+  .section-label {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px;
+  }
+  .field { margin-bottom: 10px; }
+  .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .field input, .field select {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 7px 9px; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; transition: border-color 0.2s;
+  }
+  .field input:focus, .field select:focus { border-color: var(--lu-blue); }
+  .field select option { background: #1e1e24; }
+
+  .tab-btn {
+    padding: 9px 12px; border-radius: 6px; border: 1px solid transparent;
+    background: transparent; color: var(--muted); font-family: 'DM Sans', sans-serif;
+    font-size: 13px; cursor: pointer; text-align: left; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: space-between; width: 100%; margin-bottom: 3px;
+  }
+  .tab-btn:hover { background: var(--surface2); color: var(--text); }
+  .tab-btn.active { background: var(--lu-blue-dim); border-color: rgba(59,130,246,0.3); color: var(--lu-blue); }
+  .tab-pill { font-family: 'DM Mono', monospace; font-size: 11px; padding: 2px 6px; border-radius: 4px; background: var(--surface2); }
+
+  .score-meter { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+  .meter-label { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .meter-value { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800; }
+  .meter-range { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); }
+  .meter-track { height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .meter-fill { height: 100%; border-radius: 3px; transition: width 0.4s cubic-bezier(0.4,0,0.2,1), background 0.4s; }
+
+  .main-content { overflow-y: auto; }
+  .col-headers {
+    display: grid; grid-template-columns: 1fr 155px 62px 75px;
+    padding: 9px 20px; border-bottom: 1px solid var(--border);
+    background: var(--bg); position: sticky; top: 0; z-index: 20;
+  }
+  .col-h { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+  .col-h.right { text-align: right; }
+
+  .category-group { border-bottom: 1px solid var(--border); }
+  .category-header {
+    padding: 9px 20px; background: var(--surface2);
+    font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border);
+  }
+  .score-row {
+    display: grid; grid-template-columns: 1fr 155px 62px 75px;
+    padding: 11px 20px; border-bottom: 1px solid rgba(42,42,48,0.5);
+    align-items: center; gap: 12px; transition: background 0.15s;
+  }
+  .score-row:hover { background: rgba(255,255,255,0.02); }
+  .row-question { font-size: 12.5px; line-height: 1.45; color: var(--text); }
+  .row-answer select {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 5px; padding: 5px 7px; color: var(--text);
+    font-size: 12px; font-family: 'DM Sans', sans-serif; outline: none; cursor: pointer; transition: border-color 0.2s;
+  }
+  .row-answer select:focus { border-color: var(--lu-blue); }
+  .row-answer select.critical { border-color: rgba(239,68,68,0.5); background: rgba(239,68,68,0.06); }
+  .row-answer select.not-needed { border-color: rgba(34,197,94,0.35); }
+  .row-answer select.nice { border-color: rgba(245,158,11,0.35); }
+  .row-weight { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--muted); text-align: right; }
+  .row-wscore { font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; text-align: right; }
+  .row-wscore.pos { color: var(--green); }
+  .row-wscore.neg { color: var(--red); }
+  .row-wscore.zero { color: var(--muted); }
+
+  .right-panel {
+    border-left: 1px solid var(--border); padding: 20px 16px;
+    overflow-y: auto; background: var(--surface);
+    display: flex; flex-direction: column; gap: 18px;
+  }
+  .next-step-item {
+    padding: 9px 11px; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; font-size: 12px; line-height: 1.5; color: var(--text);
+    display: flex; gap: 9px; align-items: flex-start; margin-bottom: 6px;
+  }
+  .step-num { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); min-width: 16px; padding-top: 1px; }
+  .breakdown-row { display: flex; justify-content: space-between; align-items: center; font-size: 12px; margin-bottom: 5px; }
+  .breakdown-cat { color: var(--muted); }
+  .breakdown-val { font-family: 'DM Mono', monospace; }
+
+  .export-btn {
+    background: var(--lu-blue); color: white; border: none; border-radius: 7px;
+    padding: 10px 16px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+    cursor: pointer; width: 100%; transition: opacity 0.2s, transform 0.1s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .export-btn:hover { opacity: 0.9; }
+  .export-btn:active { transform: scale(0.98); }
+
+  .toast {
+    position: fixed; bottom: 24px; right: 24px; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 8px; padding: 11px 16px;
+    font-size: 13px; z-index: 999; opacity: 0; transform: translateY(8px);
+    transition: all 0.3s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">Learn<span>Upon</span> · Complexity Scorecard</div>
+  <div id="globalStatus" class="status-badge neutral">
+    <div class="status-dot"></div><span>Awaiting input</span>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="left-panel">
+    <div>
+      <div class="section-label">Prospect Details</div>
+      <div class="field"><label>Prospect Name</label><input type="text" id="prospectName" placeholder="e.g. Acme Corp"></div>
+      <div class="field"><label>Learner Count</label><input type="text" id="learnerCount" placeholder="e.g. 3k+"></div>
+      <div class="field">
+        <label>Use Case</label>
+        <select id="useCase" onchange="renderRows();recompute()">
+          <option value="I">Internal</option>
+          <option value="E">External</option>
+          <option value="B">Both</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Deal Stage</label>
+        <select id="dealStage" onchange="recompute()">
+          <option value="Initial Discovery">Initial Discovery</option>
+          <option value="Initial Demo">Initial Demo</option>
+          <option value="Deep Dive Discovery">Deep Dive Discovery</option>
+          <option value="Deep Dive Demo">Deep Dive Demo</option>
+          <option value="Trial">Trial</option>
+          <option value="Solution Validation">Solution Validation</option>
+        </select>
+      </div>
+    </div>
+    <div>
+      <div class="section-label">Scorecard Type</div>
+      <button class="tab-btn active" onclick="switchTab('employee')" id="tab-employee">Employee Training <span class="tab-pill" id="pill-employee">—</span></button>
+      <button class="tab-btn" onclick="switchTab('customer')" id="tab-customer">Customer Education <span class="tab-pill" id="pill-customer">—</span></button>
+      <button class="tab-btn" onclick="switchTab('member')" id="tab-member">Member / Association <span class="tab-pill" id="pill-member">—</span></button>
+    </div>
+    <div>
+      <div class="section-label">Complexity Score</div>
+      <div class="score-meter">
+        <div class="meter-label">
+          <span class="meter-value" id="scoreDisplay" style="color:var(--muted)">0</span>
+          <span class="meter-range" id="rangeDisplay">—</span>
+        </div>
+        <div class="meter-track"><div class="meter-fill" id="meterFill" style="width:50%;background:var(--muted)"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <div class="col-headers">
+      <div class="col-h">Requirement / Feature</div>
+      <div class="col-h">Assessment</div>
+      <div class="col-h right">Weight</div>
+      <div class="col-h right">W.Score</div>
+    </div>
+    <div id="rowsContainer"></div>
+  </div>
+
+  <div class="right-panel">
+    <div>
+      <div class="section-label">Status</div>
+      <div id="statusBlock" class="status-badge neutral" style="width:100%;justify-content:flex-start;gap:10px;padding:12px 14px;">
+        <div class="status-dot"></div>
+        <div>
+          <div style="font-size:13px;font-weight:500" id="statusTitle">—</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px" id="statusSub">Fill in the scorecard</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="section-label">Score by Category</div>
+      <div id="breakdownGrid"></div>
+    </div>
+    <div>
+      <div class="section-label">Suggested Next Steps</div>
+      <div id="nextStepsList">
+        <div class="next-step-item" style="color:var(--muted)"><span class="step-num">—</span><span>Complete the assessment to see recommended actions</span></div>
+      </div>
+    </div>
+    <div style="margin-top:auto;padding-top:16px;border-top:1px solid var(--border)">
+      <button class="export-btn" onclick="exportExcel()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export to Excel
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const TABS = {
+  employee: {
+    label: "Employee Training",
+    rows: [
+      { cat:"UX/UI",              q:"Custom UI (Code access / custom widgets / fonts etc)",                                                              w:{I:5,  E:5,  B:5  }, type:"crit" },
+      { cat:"UX/UI",              q:"Unsupported UI Languages required — current language offering",                                                     w:{I:5,  E:5,  B:5  }, type:"crit" },
+      { cat:"Mobile",             q:"Requirement for white-labelled mobile app that includes push notifications, SMS functionality and is fully branded", w:{I:5,  E:5,  B:5  }, type:"crit" },
+      { cat:"Scale",              q:"More than 5 languages for course translation and management",                                                        w:{I:10, E:10, B:10 }, type:"crit" },
+      { cat:"User Management",    q:"More than 10K users",                                                                                               w:{I:3,  E:1,  B:1  }, type:"crit" },
+      { cat:"User Management",    q:"Hierarchy structure — multiple group memberships, manager permissions, complex role permissions",                    w:{I:12, E:0,  B:9  }, type:"crit" },
+      { cat:"Skills",             q:"Competency / Skill Matrix needs from the LMS",                                                                      w:{I:10, E:10, B:10 }, type:"crit" },
+      { cat:"Courses & Content",  q:"More than 100 courses",                                                                                             w:{I:6,  E:6,  B:6  }, type:"crit" },
+      { cat:"Courses & Content",  q:"More than 1000 course modules — asset management",                                                                  w:{I:8,  E:8,  B:8  }, type:"crit" },
+      { cat:"Courses & Content",  q:"Content format incompatibility — AICC, Labs or need for LTI / AR / VR",                                            w:{I:8,  E:8,  B:8  }, type:"crit" },
+      { cat:"Courses & Content",  q:"Heavy Resource Management (ILT scheduling / recurring sessions)",                                                   w:{I:5,  E:5,  B:5  }, type:"crit" },
+      { cat:"Courses & Content",  q:"Requirement for AI functionality — course creation, AI assistant, AI tagging",                                      w:{I:8,  E:8,  B:8  }, type:"crit" },
+      { cat:"Courses & Content",  q:"Complex approval / review workflows / prerequisites / equivalency",                                                 w:{I:7,  E:7,  B:7  }, type:"crit" },
+      { cat:"Integrations",       q:"Integration(s) need to be custom / not OOTB, or require complex manager structure via API",                         w:{I:5,  E:5,  B:5  }, type:"crit" },
+      { cat:"Integrations",       q:"Heavy API Use / Direct DB Access / Bulk Data Export",                                                               w:{I:5,  E:5,  B:5  }, type:"crit" },
+      { cat:"Integrations",       q:"Lack of developer resource / willingness to implement tech workarounds",                                            w:{I:10, E:10, B:10 }, type:"crit" },
+      { cat:"Scale",              q:"Need for more than 250 Dynamic Rules / 30+ CUD fields",                                                             w:{I:5,  E:5,  B:5  }, type:"crit" },
+      { cat:"Learning Ecosystem", q:"Unsupported Content Integrations — Udemy, Pluralsight, etc.",                                                       w:{I:8,  E:8,  B:8  }, type:"crit" },
+      { cat:"Learning Ecosystem", q:"Requirement to migrate more than 2 years worth of data",                                                            w:{I:3,  E:3,  B:3  }, type:"crit" },
+      { cat:"Workflows",          q:"Requirement for learners to create courses for their learning community",                                            w:{I:8,  E:8,  B:8  }, type:"crit" },
+      { cat:"Pain",               q:"Has clearly identified pain that LearnUpon can solve",                                                              w:{I:10, E:10, B:10 }, type:"pain" },
+    ]
+  },
+  customer: {
+    label: "Customer Education",
+    rows: [
+      { cat:"UX/UI",              q:"Custom UI (Code access / custom widgets / fonts etc)",                                                              w:{I:5,  E:5,  B:5  }, type:"crit" },
+      { cat:"UX/UI",              q:"Unsupported UI Languages required — current language offering",                                                     w:{I:7,  E:8,  B:7  }, type:"crit" },
+      { cat:"Mobile",             q:"Requirement for white-labelled mobile app that includes push notifications, SMS functionality and is fully branded", w:{I:5,  E:5,  B:5  }, type:"crit" },
+      { cat:"User Management",    q:"More than 10K users",                                                                                               w:{I:5,  E:5,  B:5  }, type:"crit" },
+      { cat:"User Management",    q:"Hierarchy structure — multiple group memberships, manager permissions, complex role permissions",                    w:{I:3,  E:3,  B:3  }, type:"crit" },
+      { cat:"User Management",    q:"Complex CUD requirements",                                                                                          w:{I:5,  E:5,  B:5  }, type:"crit" },
+      { cat:"Certification",      q:"Customer certification required",                                                                                   w:{I:2,  E:2,  B:2  }, type:"crit" },
+      { cat:"Courses & Content",  q:"More than 100 Courses",                                                                                             w:{I:3,  E:3,  B:3  }, type:"crit" },
+      { cat:"Courses & Content",  q:"Consistent updates to content / wide range of languages / managing many versions of same content",                  w:{I:8,  E:8,  B:8  }, type:"crit" },
+      { cat:"Courses & Content",  q:"Content incompatibility or complexity — Labs, Walkme's, hotspots",                                                  w:{I:8,  E:8,  B:8  }, type:"crit" },
+      { cat:"Courses & Content",  q:"Robust ILT Requirements — resource-heavy configuration",                                                            w:{I:6,  E:6,  B:6  }, type:"crit" },
+      { cat:"Reporting",          q:"Detailed reporting requirements OOTB",                                                                              w:{I:8,  E:8,  B:8  }, type:"crit" },
+      { cat:"Courses & Content",  q:"Complex approval / review workflows / prerequisites / equivalency",                                                 w:{I:7,  E:7,  B:7  }, type:"crit" },
+      { cat:"Integrations",       q:"Integration(s) need to be custom — with their own platform / product",                                              w:{I:7,  E:7,  B:7  }, type:"crit" },
+      { cat:"Integrations",       q:"Completely unsupported integration",                                                                                w:{I:7,  E:7,  B:7  }, type:"crit" },
+      { cat:"Integrations",       q:"Heavy API Use / Direct DB Access / Bulk Data Export",                                                               w:{I:7,  E:7,  B:7  }, type:"crit" },
+      { cat:"Integrations",       q:"Lack of developer resource / willingness to implement tech workarounds",                                            w:{I:10, E:10, B:10 }, type:"crit" },
+      { cat:"Scale",              q:"Need for more than 250 Dynamic Rules / 30+ CUD fields",                                                             w:{I:5,  E:5,  B:5  }, type:"crit" },
+      { cat:"Scale",              q:"More than 10 portals / complex course or portal licensing / Bulk or Group Licences",                                w:{I:2,  E:8,  B:8  }, type:"crit" },
+      { cat:"eCommerce",          q:"Complex eCommerce pricing model (subscriptions, geo-specific)",                                                     w:{I:0,  E:10, B:10 }, type:"crit" },
+      { cat:"eCommerce",          q:"Unsupported eCommerce payments (payment gateway, Pay with PO)",                                                     w:{I:10, E:10, B:10 }, type:"crit" },
+      { cat:"External Focus",     q:"Complex billing / finance processes related to LMS",                                                                w:{I:4,  E:8,  B:7  }, type:"crit" },
+      { cat:"Existing Solution",  q:"Using Custom or Legacy LMS (CSOD, SuccessFactors, Moodle etc.)",                                                    w:{I:3,  E:3,  B:3  }, type:"crit" },
+      { cat:"Pain",               q:"Has clearly identified pain that LearnUpon can solve",                                                              w:{I:10, E:10, B:10 }, type:"pain" },
+      { cat:"Search",             q:"Detailed search requirements",                                                                                      w:{I:3,  E:3,  B:3  }, type:"crit" },
+      { cat:"External Focus",     q:"Custom Web Pages",                                                                                                  w:{I:5,  E:5,  B:5  }, type:"crit" },
+    ]
+  },
+  member: {
+    label: "Member / Association",
+    rows: [
+      { cat:"UX/UI",              q:"Unsupported UI Languages required — current language offering",                                                     w:{I:7,  E:8,  B:7  }, type:"crit" },
+      { cat:"Mobile",             q:"Requirement for white-labelled mobile app that includes push notifications, SMS functionality and is fully branded", w:{I:5,  E:5,  B:5  }, type:"crit" },
+      { cat:"User Management",    q:"More than 10K users",                                                                                               w:{I:5,  E:5,  B:5  }, type:"crit" },
+      { cat:"User Management",    q:"Hierarchy structure — multiple group memberships, manager permissions, complex role permissions",                    w:{I:8,  E:8,  B:8  }, type:"crit" },
+      { cat:"CPD",                q:"Complex CPD tracking — learner or manager dashboards, etc.",                                                        w:{I:10, E:10, B:10 }, type:"crit" },
+      { cat:"Courses & Content",  q:"More than 100 courses",                                                                                             w:{I:5,  E:5,  B:5  }, type:"crit" },
+      { cat:"Courses & Content",  q:"More than 1000 content modules",                                                                                   w:{I:7,  E:7,  B:7  }, type:"crit" },
+      { cat:"Courses & Content",  q:"Third-party content requirements not OOTB",                                                                        w:{I:10, E:10, B:10 }, type:"crit" },
+      { cat:"Courses & Content",  q:"Robust ILT Requirements — resource-heavy configuration",                                                           w:{I:10, E:10, B:10 }, type:"crit" },
+      { cat:"Courses & Content",  q:"Complex approval / review workflows / prerequisites / equivalency",                                                 w:{I:7,  E:7,  B:7  }, type:"crit" },
+      { cat:"Integrations",       q:"Unsupported Integration(s) — AMS, CRM, MIS system",                                                               w:{I:5,  E:5,  B:5  }, type:"crit" },
+      { cat:"Integrations",       q:"Embedded Learning Requirement",                                                                                     w:{I:7,  E:7,  B:7  }, type:"crit" },
+      { cat:"Integrations",       q:"Heavy API Use / Direct DB Access / Bulk Data Export",                                                               w:{I:7,  E:7,  B:7  }, type:"crit" },
+      { cat:"Integrations",       q:"Lack of developer resource / willingness to implement tech workarounds",                                            w:{I:10, E:10, B:10 }, type:"crit" },
+      { cat:"Scale",              q:"Need for more than 250 Dynamic Rules / 30+ CUD fields",                                                             w:{I:5,  E:5,  B:5  }, type:"crit" },
+      { cat:"Scale",              q:"More than 10 portals / complex course or portal licensing / Bulk or Group Licences",                                w:{I:2,  E:8,  B:8  }, type:"crit" },
+      { cat:"eCommerce",          q:"Complex eCommerce pricing model (subscriptions, geo-specific)",                                                     w:{I:8,  E:8,  B:8  }, type:"crit" },
+      { cat:"eCommerce",          q:"Unsupported eCommerce payments (payment gateway, Pay with PO)",                                                     w:{I:8,  E:8,  B:8  }, type:"crit" },
+      { cat:"External Focus",     q:"Complex billing / finance processes related to LMS",                                                                w:{I:8,  E:8,  B:8  }, type:"crit" },
+      { cat:"Existing Solution",  q:"Using Custom or Legacy LMS",                                                                                        w:{I:3,  E:3,  B:3  }, type:"crit" },
+      { cat:"Social",             q:"Deep community feature requirements",                                                                               w:{I:5,  E:5,  B:5  }, type:"crit" },
+      { cat:"Social",             q:"Sharing badges or gamification on social",                                                                          w:{I:5,  E:5,  B:5  }, type:"crit" },
+      { cat:"Pain",               q:"Has clearly identified pain that LearnUpon can solve",                                                              w:{I:10, E:10, B:10 }, type:"pain" },
+    ]
+  }
+};
+
+const NEXT_STEPS = {
+  Discovery_NotRisky:      ["Schedule Tech Discovery","Schedule Demo","Make Exec Connection"],
+  Discovery_Risky:         ["Discuss with Sales Manager & SE Manager","Open up about gap & test willingness to adapt process","Deep dive on specific gap(s)","Discuss gaps with product","Gather workarounds with SA / SE / CX Teams"],
+  Discovery_VeryRisky:     ["Discuss with Manager, SE Manager & Tommy/Laura/Des","No-Go and Pull out of process","Deep dive on specific gap(s)"],
+  Demo_NotRisky:           ["Engage senior prospect stakeholders","Suggest Trial","Additional Demo","Deeper Dive Discovery","Deeper Dive Demo"],
+  Demo_Risky:              ["Be clear about gaps & test willingness to adapt process","Deep dive on specific gap(s)","Discuss gaps with product for future development","Organise follow-up call to address specific product gap / bring PM for that area"],
+  Demo_VeryRisky:          ["List gaps and get prioritisation from prospect","No-Go and Pull out of process","Deep dive on specific gap(s)","Set call with prospect and Tommy/Des"],
+  DeepDiscovery_NotRisky:  ["Schedule Deep Dive Demo","Tailor specific workflow demo","Make Exec Connection","Move to Trial"],
+  DeepDiscovery_Risky:     ["Review gaps with product and understand roadmap","Present workarounds to gaps","Schedule call with Product to present roadmap to prospect","Share gaps with prospect and get prioritisation","Refocus on the pain we can solve with prospect"],
+  DeepDiscovery_VeryRisky: ["Make Go/No-Go decision with Sales & Product Leaders","Schedule call to sell partnership and present potential solutions","Share gaps with prospect and get prioritisation","Formulate product asks and evaluate development options","Refocus on the pain we can solve with prospect"],
+  DeepDemo_NotRisky:       ["Push for product win","Set up references","Ask for Sale"],
+  DeepDemo_Risky:          ["Get feedback on complexity and gaps from Steve McC","Share gaps with prospect and get prioritisation","Confirm product commitments","Validate solution solves core pains"],
+  DeepDemo_VeryRisky:      ["Get feedback on complexity and gaps from Steve McC","Share gaps with prospect and get prioritisation","Confirm product commitments","Validate solution solves core pains","Get input from Steve McC & CX Leadership"],
+  Trial_NotRisky:          ["Push for product win","Set up references","Ask for Sale"],
+  Trial_Risky:             ["Get feedback on complexity and gaps from Steve McC","Share gaps with prospect and get prioritisation","Validate solution solves core pains"],
+  Trial_VeryRisky:         ["Get feedback on complexity and gaps from Steve McC","Share gaps with prospect and get prioritisation","Validate solution solves core pains","Get input from Steve McC & CX Leadership"],
+  Validation_NotRisky:     ["Get product win confirmation","Confirm LearnUpon solves their key pains","Ask for Sale","Ensure MAP in place and on-track"],
+  Validation_Risky:        ["Get feedback on complexity and gaps from Steve McC","Share gaps with prospect and get prioritisation","Validate solution solves core pains"],
+  Validation_VeryRisky:    ["Get feedback on complexity and gaps from Steve McC","Share gaps with prospect and get prioritisation","Validate solution solves core pains","Get input from Steve McC & CX Leadership"],
+};
+
+let currentTab = 'employee';
+let answers = { employee: {}, customer: {}, member: {} };
+
+function getUC()    { return document.getElementById('useCase').value; }
+function getStage() { return document.getElementById('dealStage').value; }
+
+function scoreAnswer(answer, type) {
+  if (type === 'pain') return answer === 'Yes' ? 1 : answer === 'No' ? -3 : 0;
+  if (answer === 'Critical')     return -3;
+  if (answer === 'Not Needed')   return 1;
+  if (answer === 'Nice-to-Have') return -1;
+  return 0;
+}
+
+function computeTabScore(tabKey) {
+  const uc = getUC();
+  return TABS[tabKey].rows.reduce((sum, row, i) => {
+    const ans = answers[tabKey][i] !== undefined ? answers[tabKey][i] : "Don't Know";
+    return sum + (row.w[uc] || 0) * scoreAnswer(ans, row.type);
+  }, 0);
+}
+
+function getStatusKey(score, stage) {
+  const s = {'Initial Discovery':'Discovery','Initial Demo':'Demo','Deep Dive Discovery':'DeepDiscovery','Deep Dive Demo':'DeepDemo','Trial':'Trial','Solution Validation':'Validation'}[stage]||'Demo';
+  return `${s}_${score>=0?'NotRisky':score>=-100?'Risky':'VeryRisky'}`;
+}
+function getRisk(score)  { return score >= 0 ? 'green' : score >= -100 ? 'amber' : 'red'; }
+function getLabel(score) {
+  if (score >= 0)    return ['Not Risky','Go Ahead!'];
+  if (score >= -100) return ['Risky','Discuss with Managers'];
+  return ['Very Risky','Discuss with Tommy / Laura / Des'];
+}
+
+function switchTab(tabKey) {
+  currentTab = tabKey;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+tabKey).classList.add('active');
+  renderRows(); recompute();
+}
+
+function renderRows() {
+  const uc = getUC(), rows = TABS[currentTab].rows, ans = answers[currentTab];
+  const groups = [];
+  rows.forEach((row, i) => {
+    const last = groups[groups.length-1];
+    if (!last || last.cat !== row.cat) groups.push({cat:row.cat, items:[]});
+    groups[groups.length-1].items.push({row,i});
+  });
+  let html = '';
+  groups.forEach(g => {
+    html += `<div class="category-group"><div class="category-header">${g.cat}</div>`;
+    g.items.forEach(({row,i}) => {
+      const answer = ans[i] !== undefined ? ans[i] : "Don't Know";
+      const w = row.w[uc] || 0;
+      const s = scoreAnswer(answer, row.type);
+      const ws = w * s;
+      const wsClass = ws > 0 ? 'pos' : ws < 0 ? 'neg' : 'zero';
+      const selClass = answer==='Critical'?'critical':answer==='Not Needed'?'not-needed':answer==='Nice-to-Have'?'nice':'';
+      const opts = (row.type==='pain' ? ["Don't Know","Yes","No"] : ["Don't Know","Critical","Not Needed","Nice-to-Have"])
+        .map(o=>`<option value="${o}"${answer===o?' selected':''}>${o}</option>`).join('');
+      html += `<div class="score-row">
+        <div class="row-question">${row.q}</div>
+        <div class="row-answer"><select class="${selClass}" onchange="setAnswer(${i},this.value)">${opts}</select></div>
+        <div class="row-weight">${w>0?w:'—'}</div>
+        <div class="row-wscore ${wsClass}">${ws!==0?(ws>0?'+':'')+ws:'—'}</div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  document.getElementById('rowsContainer').innerHTML = html;
+}
+
+function setAnswer(i, value) {
+  answers[currentTab][i] = value;
+  renderRows(); recompute();
+}
+
+function recompute() {
+  const uc = getUC(), stage = getStage();
+  const score = computeTabScore(currentTab);
+  const rows = TABS[currentTab].rows;
+
+  // Pills for all tabs
+  ['employee','customer','member'].forEach(t => {
+    const s = computeTabScore(t);
+    const el = document.getElementById('pill-'+t);
+    el.textContent = s;
+    el.style.color = s>=0?'var(--green)':s>=-100?'var(--amber)':'var(--red)';
+  });
+
+  // Meter
+  const min = rows.reduce((a,r)=>a+(r.w[uc]||0)*-3,0);
+  const max = rows.reduce((a,r)=>a+(r.w[uc]||0)*1,0);
+  const pct = ((score-min)/(max-min||1))*100;
+  const cv = score>=0?'var(--green)':score>=-100?'var(--amber)':'var(--red)';
+  document.getElementById('scoreDisplay').textContent = score;
+  document.getElementById('scoreDisplay').style.color = cv;
+  document.getElementById('rangeDisplay').textContent = `${min} → ${max}`;
+  document.getElementById('meterFill').style.cssText = `width:${Math.max(2,pct)}%;background:${cv}`;
+
+  // Status
+  const [rLabel, rSub] = getLabel(score);
+  const color = getRisk(score);
+  const sb = document.getElementById('statusBlock');
+  sb.className = `status-badge ${color}`;
+  sb.style.cssText = 'width:100%;justify-content:flex-start;gap:10px;padding:12px 14px;';
+  document.getElementById('statusTitle').textContent = rLabel;
+  document.getElementById('statusSub').textContent = rSub;
+  document.getElementById('globalStatus').className = `status-badge ${color}`;
+  document.getElementById('globalStatus').innerHTML = `<div class="status-dot"></div><span>${rLabel}</span>`;
+
+  // Next steps
+  const key = getStatusKey(score, stage);
+  const steps = NEXT_STEPS[key] || [];
+  document.getElementById('nextStepsList').innerHTML = steps.length
+    ? steps.map((s,i)=>`<div class="next-step-item"><span class="step-num">${String(i+1).padStart(2,'0')}</span><span>${s}</span></div>`).join('')
+    : `<div class="next-step-item" style="color:var(--muted)"><span class="step-num">—</span><span>Complete assessment to see actions</span></div>`;
+
+  // Breakdown
+  const catScores = {};
+  rows.forEach((row,i) => {
+    const a = answers[currentTab][i] !== undefined ? answers[currentTab][i] : "Don't Know";
+    catScores[row.cat] = (catScores[row.cat]||0) + (row.w[uc]||0)*scoreAnswer(a,row.type);
+  });
+  document.getElementById('breakdownGrid').innerHTML = Object.entries(catScores)
+    .filter(([,v])=>v!==0).sort(([,a],[,b])=>a-b)
+    .map(([cat,val])=>`<div class="breakdown-row"><span class="breakdown-cat">${cat}</span><span class="breakdown-val" style="color:${val>=0?'var(--green)':'var(--red)'}">${val>0?'+':''}${val}</span></div>`).join('')
+    || `<div style="color:var(--muted);font-size:12px">No scored items yet</div>`;
+}
+
+function exportExcel() {
+  const wb = XLSX.utils.book_new();
+  const stage=getStage(), uc=getUC();
+  const ucLabel={I:'Internal',E:'External',B:'Both'}[uc];
+  const name=document.getElementById('prospectName').value||'Prospect';
+  const learners=document.getElementById('learnerCount').value||'';
+  Object.entries(TABS).forEach(([tabKey,tab])=>{
+    const rows=tab.rows, ans=answers[tabKey];
+    const score=computeTabScore(tabKey);
+    const [rLabel]=getLabel(score);
+    const steps=NEXT_STEPS[getStatusKey(score,stage)]||[];
+    const data=[
+      [`LearnUpon Complexity Scorecard — ${tab.label}`],
+      [`Prospect: ${name}`,'',`Learner Count: ${learners}`,'',`Use Case: ${ucLabel}`,'',`Stage: ${stage}`],
+      [],
+      ['Category','Requirement / Feature','Assessment','Weighting','Score','Weighted Score'],
+    ];
+    rows.forEach((row,i)=>{
+      const answer=ans[i]!==undefined?ans[i]:"Don't Know";
+      const w=row.w[uc]||0, s=scoreAnswer(answer,row.type);
+      data.push([row.cat,row.q,answer,w,s,w*s]);
+    });
+    data.push([],[,'','','','TOTAL SCORE',score],[,'','','','STATUS',rLabel],[],['Suggested Next Steps']);
+    steps.forEach((s,i)=>data.push([`${i+1}.`,s]));
+    const ws=XLSX.utils.aoa_to_sheet(data);
+    ws['!cols']=[{wch:20},{wch:55},{wch:15},{wch:12},{wch:8},{wch:15}];
+    XLSX.utils.book_append_sheet(wb,ws,tab.label.substring(0,31));
+  });
+  XLSX.writeFile(wb,`LU_Scorecard_${name.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.xlsx`);
+  showToast('Exported successfully');
+}
+
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+renderRows(); recompute();
+</script>
+</body>
+</html>
