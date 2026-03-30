@@ -334,12 +334,12 @@ body {
             <label>Your Name (SE)</label>
             <select id="seName" onchange="updateTopBar(); saveData();">
               <option value="">Select SE...</option>
-              <option value="Alex">Alex</option>
-              <option value="Jamie">Jamie</option>
-              <option value="Jordan">Jordan</option>
-              <option value="Taylor">Taylor</option>
-              <option value="Sam">Sam</option>
-              <option value="Casey">Casey</option>
+              <option value="Nikhil Pradeep">Nikhil Pradeep</option>
+              <option value="Mason Creer">Mason Creer</option>
+              <option value="Brian McHugh">Brian McHugh</option>
+              <option value="Jonathon Gannon">Jonathon Gannon</option>
+              <option value="AJ Gianni">AJ Gianni</option>
+              <option value="Michael Niemann">Michael Niemann</option>
             </select>
           </div>
           <div class="field">
@@ -449,7 +449,7 @@ body {
           <textarea class="msg-out" id="msgOut" readonly></textarea>
           
           <button class="btn btn-dark btn-block" onclick="copyMsg()">Copy for Slack / Email</button>
-          <button class="btn btn-ghost btn-block" onclick="exportExcel()">Download for Google Sheets</button>
+          <button class="btn btn-ghost btn-block" onclick="exportToSheets()">Create Google Sheet</button>
           <button class="btn btn-ghost btn-block" style="border-color:transparent" onclick="restart()">Start New Assessment</button>
         </div>
       </div>
@@ -458,7 +458,6 @@ body {
 
   </div></div><div class="toast" id="toast"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 const TABS = {
   employee:{label:"Employee",icon:"👩‍💼",rows:[{cat:"UX / UI",q:"Custom UI — code access, custom widgets, fonts",w:{I:5,E:5,B:5},type:"crit"},{cat:"UX / UI",q:"Unsupported UI languages required",w:{I:5,E:5,B:5},type:"crit"},{cat:"Mobile",q:"White-labelled mobile app with push notifications & branding",w:{I:5,E:5,B:5},type:"crit"},{cat:"Scale",q:"More than 5 languages for course translation",w:{I:10,E:10,B:10},type:"crit"},{cat:"User Management",q:"More than 10K users",w:{I:3,E:1,B:1},type:"crit"},{cat:"User Management",q:"Hierarchy structure — multiple groups, complex roles",w:{I:12,E:0,B:9},type:"crit"},{cat:"Skills",q:"Competency / Skill Matrix requirements from LMS",w:{I:10,E:10,B:10},type:"crit"},{cat:"Courses & Content",q:"More than 100 courses",w:{I:6,E:6,B:6},type:"crit"},{cat:"Courses & Content",q:"More than 1,000 course modules — asset management",w:{I:8,E:8,B:8},type:"crit"},{cat:"Courses & Content",q:"Content incompatibility — AICC, Labs, LTI / AR / VR",w:{I:8,E:8,B:8},type:"crit"},{cat:"Courses & Content",q:"Heavy Resource Management — ILT, recurring sessions",w:{I:5,E:5,B:5},type:"crit"},{cat:"Courses & Content",q:"AI functionality — creation, assistant, tagging",w:{I:8,E:8,B:8},type:"crit"},{cat:"Courses & Content",q:"Complex approval workflows, prerequisites, equivalency",w:{I:7,E:7,B:7},type:"crit"},{cat:"Integrations",q:"Custom integrations / not OOTB, complex API structure",w:{I:5,E:5,B:5},type:"crit"},{cat:"Integrations",q:"Heavy API use / Direct DB access / Bulk data export",w:{I:5,E:5,B:5},type:"crit"},{cat:"Integrations",q:"Lack of developer resource to implement tech workarounds",w:{I:10,E:10,B:10},type:"crit"},{cat:"Scale",q:"More than 250 Dynamic Rules / 30+ CUD fields",w:{I:5,E:5,B:5},type:"crit"},{cat:"Learning Ecosystem",q:"Unsupported content integrations — Udemy, Pluralsight, etc.",w:{I:8,E:8,B:8},type:"crit"},{cat:"Learning Ecosystem",q:"Data migration of more than 2 years of historic data",w:{I:3,E:3,B:3},type:"crit"},{cat:"Workflows",q:"Learners need to create courses for their community",w:{I:8,E:8,B:8},type:"crit"},{cat:"Pain",q:"Prospect has clearly identified pain that LearnUpon can solve",w:{I:10,E:10,B:10},type:"pain"},]},
@@ -677,52 +676,71 @@ function switchMsg(mode,btn){
 }
 function copyMsg(){navigator.clipboard.writeText($('msgOut').value).then(()=>showToast('📋 Copied to clipboard'));}
 
-function exportExcel(){
-  if(typeof XLSX === 'undefined') { showToast('Excel library loading...'); return; }
-  const wb = XLSX.utils.book_new();
+// COPY TO SHEETS INSTEAD OF DOWNLOAD EXCEL
+function exportToSheets(){
   const stage = $('dealStage').value, dw = getDeriveWt();
   const ucLabel = getUCLabel();
   const name = $('prospectName').value || 'Prospect';
   const se = $('seName').value || '';
   const learners = $('learnerCount').value || '';
   const industry = $('industry').value || '';
+  const date = new Date().toLocaleDateString('en-GB');
+
+  let tsv = `LearnUpon Deal Complexity Scorecard\n\n`;
+  tsv += `Prospect:\t${name}\tAssessed by:\t${se}\n`;
+  tsv += `Industry:\t${industry}\tDate:\t${date}\n`;
+  tsv += `Learner Count:\t${learners}\tWeighting Use Case:\t${ucLabel}\n`;
+  tsv += `Deal Stage:\t${stage}\n\n`;
 
   selectedTypes.forEach(tabKey => {
     const tab = TABS[tabKey];
     const rows = tab.rows;
     const ans = answers[tabKey];
     const score = tabScore(tabKey);
-    const rLabel = riskInfo(score).label;
+    const [rLabel] = Object.values(riskInfo(score));
     const key = statusKey(score, stage);
     const steps = NEXT_STEPS[key] || [];
 
-    const data = [['LearnUpon Deal Complexity Scorecard', '', '', '', '', ''],['Prospect:', name, '', 'Assessed by:', se, ''],['Industry:', industry, '', 'Date:', new Date().toLocaleDateString('en-GB'), ''],['Learner Count:', learners, '', 'Weighting Use Case:', ucLabel, ''],['Deal Stage:', stage, '', '', '', ''],[],['Category', 'Requirement / Feature', 'Assessment', 'Weighting', 'ScoreMultiplier', 'Weighted Score'],];
+    tsv += `--- ${tab.label.toUpperCase()} ---\n`;
+    tsv += `Category\tRequirement / Feature\tAssessment\tWeighting\tScoreMultiplier\tWeighted Score\n`;
+
     rows.forEach((row, i) => {
       const answer = ans[i] !== undefined ? ans[i] : "Don't Know";
       const w = row.w[dw] || 0, s = scoreAns(answer, row.type);
-      data.push([row.cat, row.q, answer, w, s, w*s]);
+      tsv += `${row.cat}\t${row.q}\t${answer}\t${w}\t${s}\t${w*s}\n`;
     });
-    data.push([], ['', '', '', '', 'TOTAL', score], ['', '', '', '', 'STATUS', rLabel], []);
-    data.push(['Suggested Next Steps for ' + stage]);
-    // Strip HTML from Excel export too
-    steps.forEach((s,i) => data.push([`${i+1}.`, s.replace(/<\/?mark>/g, '')]));
 
-    const ws = XLSX.utils.aoa_to_sheet(data);
-    ws['!cols'] = [{wch:22},{wch:52},{wch:16},{wch:12},{wch:8},{wch:15}];
-    XLSX.utils.book_append_sheet(wb, ws, tab.label.substring(0,31));
+    tsv += `\n\t\t\t\tTOTAL\t${score}\n`;
+    tsv += `\t\t\t\tSTATUS\t${rLabel}\n\n`;
+
+    tsv += `Suggested Next Steps for ${stage}\n`;
+    steps.forEach((s,i) => {
+      tsv += `${i+1}.\t${s.replace(/<\/?mark>/g, '')}\n`;
+    });
+    tsv += `\n`;
   });
 
   const tot = totalScore(); const info = riskInfo(tot);
-  const summaryData = [['LearnUpon Deal Complexity — Summary'],['Prospect:', name, 'SE:', se, 'Date:', new Date().toLocaleDateString('en-GB')],['Stage:', stage, 'Weighting Use Case:', ucLabel],[],['Scorecard Type', 'Score', 'Status'],...selectedTypes.map(t => [TABS[t].label, tabScore(t), riskInfo(tabScore(t)).label]),[],['Combined Total', tot, info.label],];
-  const ws2 = XLSX.utils.aoa_to_sheet(summaryData);
-  ws2['!cols'] = [{wch:25},{wch:12},{wch:20},{wch:20},{wch:10},{wch:20}];
-  XLSX.utils.book_append_sheet(wb, ws2, 'Summary');
+  tsv += `--- SUMMARY ---\n`;
+  tsv += `Scorecard Type\tScore\tStatus\n`;
+  selectedTypes.forEach(t => {
+    tsv += `${TABS[t].label}\t${tabScore(t)}\t${riskInfo(tabScore(t)).label}\n`;
+  });
+  tsv += `\nCombined Total\t${tot}\t${info.label}\n`;
 
-  XLSX.writeFile(wb, `LU_Scorecard_${name.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.xlsx`);
-  showToast('✅ Excel downloaded');
+  // Write TSV string to clipboard, then open Google Sheets
+  navigator.clipboard.writeText(tsv).then(() => {
+    showToast('✅ Data copied! Paste (Ctrl+V) into the new Sheet.');
+    setTimeout(() => {
+      window.open('https://sheets.new', '_blank');
+    }, 800);
+  }).catch(err => {
+    console.error('Failed to copy to clipboard', err);
+    showToast('❌ Failed to copy data. Please check browser permissions.');
+  });
 }
 
-function showToast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+function showToast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
 
 // ── INIT ──
 document.addEventListener('DOMContentLoaded', () => {
