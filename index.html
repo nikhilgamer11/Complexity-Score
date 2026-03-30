@@ -22,6 +22,12 @@
   --amber-bg: #fef3c7;
   --red: #dc2626;
   --red-bg: #fee2e2;
+  --lu-blue: #3b82f6;
+  --lu-blue-dim: rgba(59,130,246,0.12);
+  
+  /* Gradinent Palette from Screenshot */
+  --grad-prioritized-tasks: linear-gradient(135deg, #fbcfe8 0%, #fda4af 50%, #f9a8d4 100%);
+  --grad-additional-tasks: linear-gradient(135deg, #a7f3d0 0%, #34d399 50%, #6ee7b7 100%);
   --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
   --shadow-lg: 0 8px 40px rgba(0,0,0,0.12);
   --radius: 14px;
@@ -76,6 +82,7 @@ body::before {
 .logo-badge { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; border: 1px solid var(--border); border-radius: 20px; padding: 2px 8px; margin-left: 4px; }
 
 .header-right { display: flex; align-items: center; gap: 10px; }
+.header-search { display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 20px; background: var(--bg2); color: var(--muted); font-size: 13px; }
 .header-se { font-size: 13px; color: var(--muted); }
 .header-se strong { color: var(--text); }
 
@@ -109,7 +116,7 @@ body::before {
 @media (max-width: 500px) { .step-line { width: 20px; } .step-label { display: none; } }
 
 /* ── CONTAINER ── */
-.container { max-width: 760px; margin: 0 auto; padding: 24px 16px 80px; }
+.container { max-width: 900px; margin: 0 auto; padding: 24px 16px 80px; }
 
 /* ── CARD ── */
 .card {
@@ -131,19 +138,12 @@ body::before {
 }
 .card-header p { color: var(--muted); font-size: 14px; margin-top: 4px; }
 
-/* ── STEP 1: WELCOME ── */
-.welcome-grid {
+/* ── STEP 1: DETAILS ── */
+.details-grid {
   display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
   padding: 24px 28px;
 }
-@media (max-width: 560px) { .welcome-grid { grid-template-columns: 1fr; } }
-
-.se-field {
-  grid-column: 1 / -1;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-  padding: 0 0 4px;
-}
-@media (max-width: 560px) { .se-field { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .details-grid { grid-template-columns: 1fr; } }
 
 .input-group { display: flex; flex-direction: column; gap: 5px; }
 .input-group label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
@@ -331,16 +331,128 @@ body::before {
 .btn-sm { padding: 7px 14px; font-size: 13px; }
 
 /* ── RESULTS PAGE ── */
-.results-hero {
-  padding: 32px 28px 24px;
+.results-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr 1fr;
+  grid-template-rows: auto auto auto auto auto;
+  gap: 16px;
+  padding: 24px 28px;
+}
+
+@media (max-width: 768px) {
+  .results-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    padding: 16px;
+  }
+}
+
+/* Profile / Risk Status Bento */
+.profile-bento {
+  grid-row: 1 / 4;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--card);
   position: relative;
   overflow: hidden;
 }
-.results-hero.green { background: linear-gradient(135deg, #f0fdf4, #dcfce7); }
-.results-hero.amber { background: linear-gradient(135deg, #fffbeb, #fef3c7); }
-.results-hero.red   { background: linear-gradient(135deg, #fff5f5, #fee2e2); }
 
+.risk-status-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  border: 1px solid;
+}
+
+/* Gradient Bento Cards (Scores) */
+.score-bento {
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  color: var(--text);
+  position: relative;
+  border: 1px solid rgba(221,218,210,0.5);
+}
+
+.score-bento-title {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: 'DM Mono', monospace;
+  color: var(--muted);
+}
+.score-bento-value {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1;
+  margin: 10px 0;
+}
+.score-bento-sub { font-size: 12px; color: var(--muted); }
+
+/* Flags / Breakdown Bento */
+.breakdown-bento {
+  border-radius: var(--radius);
+  padding: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+
+.bento-header {
+  font-family: 'Bricolage Grotesque', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+/* Developed Areas Bento */
+.developed-areas-bento {
+  grid-column: 2 / -1;
+  border-radius: var(--radius);
+  padding: 16px;
+  background: var(--card);
+  border: 1px solid var(--border);
+}
+
+/* Slack Notes Bento */
+.slack-notes-bento {
+  grid-column: 1 / -1;
+  grid-row: 4;
+  padding: 20px;
+  background: var(--bg2);
+  border-radius: var(--radius-sm);
+}
+
+.slack-textarea {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text);
+  resize: none;
+  min-height: 180px;
+  outline: none;
+}
+
+/* Action Bento */
+.action-bento {
+  grid-column: 1 / -1;
+  grid-row: 5;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 20px 24px;
+  border-top: 1px solid var(--border);
+}
+
+/* Confetti */
 .confetti-burst {
   position: absolute; inset: 0; pointer-events: none; overflow: hidden;
 }
@@ -353,96 +465,44 @@ body::before {
   100% { transform: translateY(300px) rotate(720deg); opacity: 0; }
 }
 
-.result-icon { font-size: 48px; margin-bottom: 12px; display: block; animation: pop-in 0.5s cubic-bezier(0.175,0.885,0.32,1.275); }
-@keyframes pop-in { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+/* Bar Chart */
+.developed-bar-group { display: flex; justify-content: space-between; align-items: center; font-size: 13px; margin-bottom: 8px; }
+.developed-bar-track { flex: 1; height: 6px; background: var(--bg); border-radius: 3px; margin: 0 10px; overflow: hidden; }
+.developed-bar-fill { height: 100%; background: var(--lu-blue); border-radius: 3px; transition: width 0.6s ease; }
+.developed-bar-val { font-family: 'DM Mono', monospace; min-width: 32px; text-align: right; color: var(--muted); }
 
-.result-title {
-  font-family: 'Bricolage Grotesque', sans-serif;
-  font-size: 30px; font-weight: 800; letter-spacing: -1px;
-  margin-bottom: 6px;
-}
-.result-subtitle { color: var(--muted); font-size: 15px; }
+/* Flags */
+.critical-flags-list { display: flex; flex-direction: column; gap: 6px; }
+.flag-item { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-radius: var(--radius-sm); border: 1.5px solid var(--red-bg); background: var(--red-bg); font-size: 12px; color: var(--red); }
 
-.scores-grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;
-  padding: 20px 28px;
-  border-bottom: 1px solid var(--border);
-}
-.score-card {
-  background: var(--bg); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 16px;
-}
-.score-card-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-family: 'DM Mono', monospace; margin-bottom: 8px; }
-.score-card-num { font-family: 'Bricolage Grotesque', sans-serif; font-size: 26px; font-weight: 800; line-height: 1; }
-.score-card-status { font-size: 12px; font-weight: 600; margin-top: 5px; }
-
-/* ── ACTION STEPS ── */
-.action-section { padding: 20px 28px; }
-.action-section h3 { font-family: 'Bricolage Grotesque', sans-serif; font-size: 16px; font-weight: 700; margin-bottom: 14px; }
-.action-steps { display: flex; flex-direction: column; gap: 8px; }
-
-.action-step {
-  display: flex; gap: 12px; align-items: flex-start;
-  padding: 12px 14px; border-radius: var(--radius-sm);
-  border: 1.5px solid;
-  animation: slide-in 0.3s ease both;
-}
-@keyframes slide-in { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: translateX(0); } }
-.action-step.green { background: #f0fdf4; border-color: #bbf7d0; }
-.action-step.amber { background: #fffbeb; border-color: #fde68a; }
-.action-step.red   { background: #fff5f5; border-color: #fecaca; }
-
-.action-num {
-  width: 24px; height: 24px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 600;
-  flex-shrink: 0;
-}
-.action-step.green .action-num { background: var(--green); color: white; }
-.action-step.amber .action-num { background: var(--amber); color: white; }
-.action-step.red   .action-num { background: var(--red);   color: white; }
-.action-text { font-size: 13px; line-height: 1.5; padding-top: 2px; }
-
-/* ── URGENCY CALLOUT ── */
-.urgency-callout {
-  margin: 0 28px 20px;
-  padding: 14px 16px;
-  border-radius: var(--radius-sm);
-  display: flex; gap: 12px; align-items: flex-start;
-  font-size: 13px; line-height: 1.5;
-}
-.urgency-callout.amber { background: var(--amber-bg); border: 1.5px solid #fde68a; }
-.urgency-callout.red   { background: var(--red-bg);   border: 1.5px solid #fecaca; }
-.urgency-icon { font-size: 18px; flex-shrink: 0; }
-.urgency-text strong { display: block; font-weight: 600; margin-bottom: 2px; }
-
-/* ── EXPORT BUTTONS ── */
-.export-row {
-  padding: 16px 28px 24px;
-  display: flex; flex-wrap: wrap; gap: 10px;
-  border-top: 1px solid var(--border);
-}
+/* EXPORT BUTTONS */
 .btn-export {
   padding: 10px 18px; border-radius: var(--radius-sm);
   font-size: 13px; font-weight: 600; cursor: pointer;
   display: flex; align-items: center; gap: 7px;
   transition: all 0.2s; border: 1.5px solid; font-family: 'DM Sans', sans-serif;
 }
-.btn-export-excel { background: #1D6F42; color: white; border-color: #1D6F42; }
-.btn-export-excel:hover { background: #165a35; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(29,111,66,0.3); }
-.btn-export-sf { background: #0176d3; color: white; border-color: #0176d3; }
-.btn-export-sf:hover { background: #0165b8; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(1,118,211,0.3); }
+.btn-export-excel { background: #0f9d58; color: white; border-color: #0f9d58; }
+.btn-export-excel:hover { background: #0b8043; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(15,157,88,0.3); }
+.btn-export-sf { background: #4a154b; color: white; border-color: #4a154b; }
+.btn-export-sf:hover { background: #361036; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(74,21,75,0.3); }
 .btn-restart { background: transparent; color: var(--text); border-color: var(--border); }
 .btn-restart:hover { border-color: var(--lu-orange); color: var(--lu-orange); }
 
-/* ── ANIMATIONS ── */
+/* Meter Bar */
+.meter-row { padding: 0 20px 16px; }
+.meter-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 6px; font-family: 'DM Mono', monospace; }
+.meter-track { height: 6px; background: var(--border); border-radius: 3px; overflow: visible; position: relative; }
+.meter-fill { height: 100%; border-radius: 3px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1), background 0.5s; }
+
+/* ANIMATIONS */
 .fade-in { animation: fade-in 0.35s ease; }
 @keyframes fade-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
 .page-slide { animation: page-slide 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 @keyframes page-slide { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 
-/* ── TOAST ── */
+/* TOAST */
 .toast {
   position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(10px);
   background: var(--text); color: white; border-radius: 8px; padding: 10px 18px;
@@ -451,50 +511,15 @@ body::before {
 }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* ── METER BAR ── */
-.meter-row { padding: 0 20px 16px; }
-.meter-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 6px; font-family: 'DM Mono', monospace; }
-.meter-track { height: 6px; background: var(--border); border-radius: 3px; overflow: visible; position: relative; }
-.meter-fill { height: 100%; border-radius: 3px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1), background 0.5s; }
-.meter-zones {
-  display: flex; gap: 2px; margin-top: 4px;
+/* Icon Wrap from Screenshot */
+.icon-wrap-bento {
+  width: 40px; height: 40px; border-radius: 9px;
+  background: rgba(255,255,255,0.25);
+  display: flex; align-items: center; justify-content: center;
+  position: absolute; top: 16px; right: 16px;
 }
-.meter-zone { height: 3px; border-radius: 2px; flex: 1; }
+.icon-wrap-bento svg { stroke: white; }
 
-/* ── SF TEXT AREA ── */
-.sf-textarea-wrap { padding: 0 28px 20px; }
-.sf-label { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-.sf-textarea {
-  width: 100%; background: var(--bg); border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm); padding: 12px;
-  font-family: 'DM Mono', monospace; font-size: 12px; line-height: 1.6;
-  color: var(--text); resize: vertical; min-height: 120px;
-  outline: none; transition: border-color 0.2s;
-}
-.sf-textarea:focus { border-color: var(--lu-orange); }
-
-/* ── DIVIDER ── */
-.divider { height: 1px; background: var(--border); margin: 0; }
-
-/* ── COMPLETION RING ── */
-.completion-ring { display: inline-flex; align-items: center; justify-content: center; position: relative; }
-.ring-svg { transform: rotate(-90deg); }
-.ring-bg { fill: none; stroke: var(--border); stroke-width: 3; }
-.ring-prog { fill: none; stroke-width: 3; stroke-linecap: round; transition: stroke-dashoffset 0.6s cubic-bezier(0.4,0,0.2,1), stroke 0.3s; }
-
-/* ── NO SELECTION NOTICE ── */
-.empty-notice { padding: 40px 28px; text-align: center; color: var(--muted); }
-.empty-notice p { font-size: 14px; margin-top: 8px; }
-
-/* ── MOBILE TWEAKS ── */
-@media (max-width: 480px) {
-  .card-header { padding: 18px 16px 14px; }
-  .card-header h2 { font-size: 18px; }
-  .welcome-grid, .deal-type-grid { padding: 16px; }
-  .action-section, .export-row, .scores-grid { padding-left: 16px; padding-right: 16px; }
-  .score-footer { flex-wrap: wrap; }
-  .btn { font-size: 13px; }
-}
 </style>
 </head>
 <body>
@@ -511,10 +536,15 @@ body::before {
     <div>
       <div class="logo-text">Learn<span>Upon</span></div>
     </div>
-    <span class="logo-badge">Deal Complexity</span>
+    <span class="logo-badge">Complexity Scorecard</span>
   </div>
   <div class="header-right">
+    <span class="header-search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        Search...
+    </span>
     <span class="header-se" id="headerSeName" style="display:none"></span>
+    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='34' height='34' viewBox='0 0 34 34'%3E%3Ccircle cx='17' cy='17' r='17' fill='%23dddad2'/%3E%3Cpath d='M17 17.5a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6 5.5s-1.5-3-6-3-6 3-6 3h12z' fill='%237a7770'/%3E%3C/svg%3E" alt="Avatar" width="34" height="34">
   </div>
 </header>
 
@@ -556,11 +586,19 @@ body::before {
       <h2>Welcome to the Scorecard</h2>
       <p>Quickly assess deal complexity and get tailored next steps. Takes about 3 minutes.</p>
     </div>
-    <div class="welcome-grid">
+    <div class="details-grid">
       <div class="se-field">
         <div class="input-group">
           <label>Your Name (SE)</label>
-          <input type="text" id="seName" placeholder="e.g. Nikhil Sharma" oninput="updateSeName()">
+          <select id="seName" onchange="updateSeName(); saveData()">
+            <option value="" disabled selected>Select SE...</option>
+            <option value="Alex">Alex</option>
+            <option value="Jamie">Jamie</option>
+            <option value="Jordan">Jordan</option>
+            <option value="Sam">Sam</option>
+            <option value="Taylor">Taylor</option>
+            <option value="Casey">Casey</option>
+          </select>
         </div>
         <div class="input-group">
           <label>Deal Stage</label>
@@ -580,19 +618,27 @@ body::before {
       </div>
       <div class="input-group">
         <label>Learner Count</label>
-        <input type="text" id="learnerCount" placeholder="e.g. 5,000">
-      </div>
-      <div class="input-group">
-        <label>Use Case</label>
-        <select id="useCase">
-          <option value="I">Internal (Employees)</option>
-          <option value="E">External (Customers / Partners)</option>
-          <option value="B">Both</option>
+        <select id="learnerCount">
+          <option value="" disabled selected>Select range...</option>
+          <option value="< 1,000">&lt; 1,000</option>
+          <option value="1,000 - 5,000">1,000 - 5,000</option>
+          <option value="5,000 - 10,000">5,000 - 10,000</option>
+          <option value="10,000+">10,000+</option>
         </select>
       </div>
-      <div class="input-group">
+      <div class="input-group" style="grid-column: 1 / -1">
         <label>Industry</label>
-        <input type="text" id="industry" placeholder="e.g. Financial Services">
+        <select id="industry">
+          <option value="" disabled selected>Select industry...</option>
+          <option value="Software / Technology">Software / Technology</option>
+          <option value="Manufacturing">Manufacturing</option>
+          <option value="Financial Services">Financial Services</option>
+          <option value="Healthcare">Healthcare</option>
+          <option value="Retail / eCommerce">Retail / eCommerce</option>
+          <option value="Professional Services">Professional Services</option>
+          <option value="Non-Profit / Charity">Non-Profit / Charity</option>
+          <option value="Other">Other</option>
+        </select>
       </div>
     </div>
     <div style="padding: 0 28px 24px; display: flex; justify-content: flex-end;">
@@ -623,7 +669,7 @@ body::before {
       </div>
       <div class="deal-card" id="dc-member" onclick="toggleDealType('member')">
         <div class="deal-card-icon">🏛️</div>
-        <div class="deal-card-title">Member / Association</div>
+        <div class="deal-card-title">Membership / Association</div>
         <div class="deal-card-desc">Professional bodies, CPD, member certification</div>
       </div>
     </div>
@@ -686,37 +732,72 @@ body::before {
 </div>
 
 <div id="step4" style="display:none">
-  <div class="card page-slide" id="resultsCard">
-    <div id="resultsHero"></div>
-    <div class="scores-grid" id="scoresGrid"></div>
-    <div class="divider"></div>
-    <div id="urgencyCallout"></div>
-    <div class="action-section">
-      <h3 id="actionTitle">Recommended Next Steps</h3>
-      <div class="action-steps" id="actionSteps"></div>
-    </div>
-    <div class="divider"></div>
-    <div class="sf-textarea-wrap">
-      <div class="sf-label">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0176d3" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
-        Salesforce Notes — Copy &amp; paste directly into the opportunity
+  <div class="results-grid fade-in">
+    <div class="profile-bento card">
+      <div class="confetti-burst" id="resultsConfetti"></div>
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Ccircle cx='40' cy='40' r='40' fill='%23dddad2'/%3E%3Cpath d='M40 40.5a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm12 11s-3-6-12-6-12 6-12 6h24z' fill='%237a7770'/%3E%3C/svg%3E" alt="SE Avatar" width="80" height="80" style="border-radius:50%; margin-bottom:12px">
+      <div style="font-family:'Bricolage Grotesque', sans-serif; font-weight:800; font-size:18px" id="resSeName">SE Name</div>
+      <div style="font-size:13px; color:var(--muted); margin-bottom:16px" id="resProspect">Prospect Name</div>
+      
+      <div style="font-size:11px; text-transform:uppercase; letter-spacing:1px; color:var(--muted); font-family:'DM Mono', monospace; margin-bottom:4px">Overall combined risk</div>
+      <div class="risk-status-badge neutral" id="resultsStatusBadge">
+        Awaiting input
       </div>
-      <textarea class="sf-textarea" id="sfNotes" readonly></textarea>
     </div>
-    <div class="export-row">
+
+    <div class="score-bento card" style="background:var(--grad-additional-tasks); grid-column: 2; color:white">
+        <div class="score-bento-title" style="color:white; opacity:0.8">Total combined score</div>
+        <div class="score-bento-value" id="resultsTotalScore">0</div>
+        <div class="score-bento-sub" id="resultsTotalStatus" style="color:white; opacity:0.8; font-weight:600">Neutral</div>
+        <div class="icon-wrap-bento">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 2v20M2 12h20M12 12a1 1 0 110 2 1 1 0 010-2z"></path></svg>
+        </div>
+    </div>
+
+    <div class="score-bento card" style="background:var(--grad-prioritized-tasks); grid-column: 3; color:white">
+        <div class="score-bento-title" style="color:white; opacity:0.8" id="resPrimaryLabel">Primary score</div>
+        <div class="score-bento-value" id="resultsPrimaryScore">0</div>
+        <div class="score-bento-sub" id="resultsPrimaryStatus" style="color:white; opacity:0.8; font-weight:600">Neutral</div>
+        <div class="icon-wrap-bento">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M12 2l2.4 7.2h7.6l-6 4.8 2.4 7.2-6-4.8-6 4.8 2.4-7.2-6-4.8h7.6z"></path></svg>
+        </div>
+    </div>
+
+    <div class="breakdown-bento card" style="grid-column: 2 / -1">
+        <div class="bento-header">Flagged requirements</div>
+        <div class="critical-flags-list" id="resCriticalFlags">
+            <div style="color:var(--muted); font-size:12px">No critical issues flagged.</div>
+        </div>
+    </div>
+
+    <div class="developed-areas-bento developed-areas card">
+        <div class="bento-header">Score by developed areas</div>
+        <div id="resBreakdownBars"></div>
+    </div>
+
+    <div class="slack-notes-bento slack-notes card">
+        <div class="bento-header" style="display:flex; align-items:center; gap:8px">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4a154b" stroke-width="2"><path d="M17 17.5a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6 5.5s-1.5-3-6-3-6 3-6 3h12z" fill="#4a154b"></path></svg>
+            Update for Slack / Email
+        </div>
+        <textarea class="slack-textarea" id="slackNotes" readonly></textarea>
+    </div>
+
+    <div class="action-bento action-section card">
       <button class="btn-export btn-export-excel" onclick="exportExcel()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Download Excel
+        Download for Google Sheets
       </button>
-      <button class="btn-export btn-export-sf" onclick="copySfNotes()">
+      <button class="btn-export btn-export-sf" onclick="copySlackNotes()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
-        Copy for Salesforce
+        Copy for Slack / Email
       </button>
       <button class="btn-export btn-restart" onclick="restart()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
         New Assessment
       </button>
     </div>
+
   </div>
 </div>
 
@@ -786,7 +867,7 @@ const TABS = {
     ]
   },
   member: {
-    label: "Member / Association", icon: "🏛️", color: "#065f46",
+    label: "Membership / Association", icon: "🏛️", color: "#065f46",
     rows: [
       { cat:"UX / UI",              q:"Unsupported UI languages required",                                                       w:{I:7,  E:8,  B:7  }, type:"crit" },
       { cat:"Mobile",               q:"White-labelled mobile app with push notifications, SMS and full branding",                          w:{I:5,  E:5,  B:5  }, type:"crit" },
@@ -841,7 +922,6 @@ const NEXT_STEPS = {
 // ════════════════════════════════════════════════════════════════
 let currentStep = 1;
 let selectedTypes = [];
-let secondaryType = null;
 let currentViewTab = null;
 let answers = { employee: {}, customer: {}, member: {} };
 
@@ -854,7 +934,6 @@ function saveData() {
     dealStage: document.getElementById('dealStage').value,
     prospectName: document.getElementById('prospectName').value,
     learnerCount: document.getElementById('learnerCount').value,
-    useCase: document.getElementById('useCase').value,
     industry: document.getElementById('industry').value,
     currentStep,
     selectedTypes,
@@ -873,7 +952,6 @@ function loadData() {
       document.getElementById('dealStage').value = data.dealStage || 'Initial Discovery';
       document.getElementById('prospectName').value = data.prospectName || '';
       document.getElementById('learnerCount').value = data.learnerCount || '';
-      document.getElementById('useCase').value = data.useCase || 'I';
       document.getElementById('industry').value = data.industry || '';
       
       updateSeName();
@@ -890,7 +968,7 @@ function loadData() {
         btn.style.opacity = '1';
         
         const others = ['employee','customer','member'].filter(t => t !== selectedTypes[0]);
-        const labelMap = { employee:'Employee Training', customer:'Customer Education', member:'Member / Association' };
+        const labelMap = { employee:'Employee Training', customer:'Customer Education', member:'Membership / Association' };
         document.getElementById('alsoAddLabel').textContent = others.map(o => labelMap[o]).join(' + ');
         document.getElementById('alsoAddRow').style.display = 'flex';
         
@@ -923,7 +1001,7 @@ function loadData() {
 
 // Global listener for input changes to automatically save
 document.addEventListener('DOMContentLoaded', () => {
-  const inputs = ['seName', 'dealStage', 'prospectName', 'learnerCount', 'useCase', 'industry'];
+  const inputs = ['seName', 'dealStage', 'prospectName', 'learnerCount', 'industry'];
   inputs.forEach(id => {
     const el = document.getElementById(id);
     if(el) {
@@ -962,12 +1040,12 @@ function updateProgress() {
 function goStep1() { showStep(1); }
 function goStep2() {
   const name = document.getElementById('prospectName').value.trim();
-  if (!name) { showToast('Please enter a prospect name first'); return; }
+  if (!name) { showToast('🚩 Prospect name required'); return; }
   showStep(2);
 }
 
 function goStep3(fromLoad = false) {
-  if (!selectedTypes.length) { showToast('Please select a deal type'); return; }
+  if (!selectedTypes.length) { showToast('🚩 Deal type required'); return; }
   if (!fromLoad || !currentViewTab) currentViewTab = selectedTypes[0];
   buildTabBar();
   buildFormMeta();
@@ -985,14 +1063,14 @@ function goStep4(fromLoad = false) {
 
 function restart() {
   localStorage.removeItem('lu_scorecard_data');
-  selectedTypes = []; secondaryType = null;
+  selectedTypes = [];
   answers = { employee: {}, customer: {}, member: {} };
   
-  // Clear inputs manually so the visual matches state
+  // Clear inputs manually
   document.getElementById('prospectName').value = '';
-  document.getElementById('learnerCount').value = '';
-  document.getElementById('industry').value = '';
-  document.getElementById('seName').value = '';
+  document.getElementById('seName').selectedIndex = 0;
+  document.getElementById('learnerCount').selectedIndex = 0;
+  document.getElementById('industry').selectedIndex = 0;
   updateSeName();
 
   document.querySelectorAll('.deal-card').forEach(c => c.classList.remove('selected'));
@@ -1018,7 +1096,7 @@ function toggleDealType(type) {
   card.classList.add('selected');
 
   const others = ['employee','customer','member'].filter(t => t !== type);
-  const labelMap = { employee:'Employee Training', customer:'Customer Education', member:'Member / Association' };
+  const labelMap = { employee:'Employee Training', customer:'Customer Education', member:'Membership / Association' };
   document.getElementById('alsoAddLabel').textContent = others.map(o => labelMap[o]).join(' + ');
   document.getElementById('alsoAddRow').style.display = 'flex';
 
@@ -1042,14 +1120,21 @@ function toggleAlsoAdd() {
 // ════════════════════════════════════════════════════════════════
 // FORM META + TAB BAR
 // ════════════════════════════════════════════════════════════════
+function getUC() {
+  // Derive Use Case automatically from the primary selected deal type
+  if (!selectedTypes || !selectedTypes[0]) return 'I';
+  const map = { employee: 'I', customer: 'E', member: 'B' };
+  return map[selectedTypes[0]];
+}
+
 function buildFormMeta() {
   const name = document.getElementById('prospectName').value || 'Prospect';
-  const uc = {I:'Internal',E:'External',B:'Both'}[document.getElementById('useCase').value];
+  const uc = {I:'Internal',E:'External',B:'Memberships'}[getUC()];
   const stage = document.getElementById('dealStage').value;
   const learners = document.getElementById('learnerCount').value;
   document.getElementById('formMeta').innerHTML = `
     <div class="meta-chip"><strong>${name}</strong></div>
-    <div class="meta-chip">Use Case: <strong>${uc}</strong></div>
+    <div class="meta-chip">Weighting: <strong>${uc}</strong></div>
     <div class="meta-chip">Stage: <strong>${stage}</strong></div>
     ${learners ? `<div class="meta-chip">Learners: <strong>${learners}</strong></div>` : ''}
   `;
@@ -1081,7 +1166,6 @@ function switchViewTab(t) {
 // ════════════════════════════════════════════════════════════════
 // SCORING
 // ════════════════════════════════════════════════════════════════
-function getUC() { return document.getElementById('useCase').value; }
 function getStage() { return document.getElementById('dealStage').value; }
 
 function scoreAnswer(answer, type) {
@@ -1110,9 +1194,9 @@ function getStatusKey(score, stage) {
 }
 function getRisk(score)  { return score>=0?'green':score>=-100?'amber':'red'; }
 function getRiskInfo(score) {
-  if (score>=0) return { label:'Not Risky', sub:'Go Ahead — good fit', icon:'✅', color:'green' };
+  if (score>=0) return { label:'Not Risky', sub:'good process fit', icon:'✅', color:'green' };
   if (score>=-100) return { label:'Risky', sub:'Discuss with Managers', icon:'⚠️', color:'amber' };
-  return { label:'Very Risky', sub:'Discuss with Tommy / Laura / Des', icon:'🚨', color:'red' };
+  return { label:'Very Risky', sub:'Escalate immediately', icon:'🚨', color:'red' };
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -1194,87 +1278,122 @@ function buildResults() {
   const risk = getRisk(totalScore);
   const info = getRiskInfo(totalScore);
 
-  // Hero
-  const hero = document.getElementById('resultsHero');
-  hero.className = `results-hero ${risk}`;
-  let confetti = '';
+  // Profile Bento
+  document.getElementById('resSeName').textContent = document.getElementById('seName').value || 'SE Name';
+  document.getElementById('resProspect').textContent = document.getElementById('prospectName').value || 'Prospect Name';
+  
+  const resBadg = document.getElementById('resultsStatusBadge');
+  resBadg.className = `risk-status-badge ${risk}`;
+  resBadg.style.cssText = `border-color: ${risk==='green'?'var(--green)':risk==='amber'?'var(--amber)':'var(--red)'}; color: ${risk==='green'?'var(--green)':risk==='amber'?'var(--amber)':'var(--red)'}`;
+  resBadg.textContent = info.label;
+
+  // Gradinent Scores Bento
+  document.getElementById('resultsTotalScore').textContent = totalScore;
+  document.getElementById('resultsTotalStatus').textContent = info.label;
+
+  // Confetti
+  const confet = document.getElementById('resultsConfetti');
+  confet.innerHTML = '';
   if (risk === 'green') {
-    const colors = ['#16a34a','#22c55e','#ff5a1f','#fbbf24','#3b82f6'];
-    for(let i=0;i<20;i++) {
+    const colors = ['#16a34a','#ff5a1f','#fbbf24','#3b82f6','#a7f3d0'];
+    for(let i=0;i<25;i++) {
       const c = colors[Math.floor(Math.random()*colors.length)];
       const l = Math.random()*100;
-      const delay = Math.random()*1.5;
-      confetti += `<div class="confetti-piece" style="left:${l}%;background:${c};animation-delay:${delay}s;animation-duration:${2+Math.random()*1}s"></div>`;
+      confet.innerHTML += `<div class="confetti-piece" style="left:${l}%;background:${c};animation-delay:${Math.random()*1.5}s"></div>`;
     }
   }
-  hero.innerHTML = `
-    <div class="confetti-burst">${confetti}</div>
-    <span class="result-icon">${info.icon}</span>
-    <div class="result-title" style="color:${risk==='green'?'var(--green)':risk==='amber'?'var(--amber)':'var(--red)'}">${info.label}</div>
-    <div class="result-subtitle">${info.sub} · ${stage}</div>
-  `;
 
-  // Score cards
-  const scoresGrid = document.getElementById('scoresGrid');
-  scoresGrid.innerHTML = selectedTypes.map(t => {
-    const s = computeTabScore(t);
-    const r = getRisk(s);
-    const inf = getRiskInfo(s);
-    const cv = r==='green'?'var(--green)':r==='amber'?'var(--amber)':'var(--red)';
-    return `<div class="score-card">
-      <div class="score-card-label">${TABS[t].icon} ${TABS[t].label}</div>
-      <div class="score-card-num" style="color:${cv}">${s}</div>
-      <div class="score-card-status" style="color:${cv}">${inf.label}</div>
-    </div>`;
-  }).join('') + (selectedTypes.length > 1 ? `
-    <div class="score-card" style="border-color:var(--lu-orange)">
-      <div class="score-card-label">🏆 Combined Total</div>
-      <div class="score-card-num" style="color:${risk==='green'?'var(--green)':risk==='amber'?'var(--amber)':'var(--red)'}">${totalScore}</div>
-      <div class="score-card-status" style="color:${risk==='green'?'var(--green)':risk==='amber'?'var(--amber)':'var(--red)'}">${info.label}</div>
-    </div>` : '');
+  // Primary Score
+  const primaryType = selectedTypes[0];
+  const primaryScore = computeTabScore(primaryType);
+  const primaryInf = getRiskInfo(primaryScore);
+  document.getElementById('resPrimaryLabel').textContent = `${TABS[primaryType].icon} ${TABS[primaryType].label} score`;
+  document.getElementById('resultsPrimaryScore').textContent = primaryScore;
+  document.getElementById('resultsPrimaryStatus').textContent = primaryInf.label;
 
-  // Urgency callout
-  const urgency = document.getElementById('urgencyCallout');
-  if (risk === 'amber') {
-    urgency.innerHTML = `<div class="urgency-callout amber"><span class="urgency-icon">⚠️</span><div class="urgency-text"><strong>Action required</strong>This deal has complexity risks. Review the steps below before your next customer interaction and discuss with your Sales Manager.</div></div>`;
-  } else if (risk === 'red') {
-    urgency.innerHTML = `<div class="urgency-callout red"><span class="urgency-icon">🚨</span><div class="urgency-text"><strong>Immediate escalation needed</strong>This deal is highly complex. Do not proceed to the next stage without discussing with Tommy / Laura / Des. Be transparent with the prospect about gaps.</div></div>`;
+  // Urgency/Flags
+  const criticals = [];
+  selectedTypes.forEach(t => {
+    TABS[t].rows.forEach((row, i) => {
+      const ans = answers[t][i];
+      if (ans === 'Critical') criticals.push(`🚩 [${TABS[t].label}] ${row.q}`);
+    });
+  });
+  
+  const flagsWrap = document.getElementById('resCriticalFlags');
+  if (criticals.length) {
+    flagsWrap.innerHTML = criticals.map(f => `<div class="flag-item">${f}</div>`).join('');
   } else {
-    urgency.innerHTML = '';
+    flagsWrap.innerHTML = `<div style="color:var(--muted); font-size:12px">No critical issues flagged. Good process fit.</div>`;
   }
 
-  // Action steps — use primary tab's score for next steps
-  const primaryScore = computeTabScore(selectedTypes[0]);
-  const key = getStatusKey(primaryScore, stage);
-  const steps = NEXT_STEPS[key] || [];
-  document.getElementById('actionTitle').textContent = `Recommended Next Steps — ${stage}`;
+  // Developed areas bars
+  const uc = getUC();
+  const areaTotals = { UX: 0, Mobile: 0, Scale: 0, Users: 0, Skills: 0, Content: 0, Int: 0, Cert: 0, Rept: 0, Pain: 0, Soc: 0, eCom: 0, CP: 0 };
+  const areaCounts = { UX: 0, Mobile: 0, Scale: 0, Users: 0, Skills: 0, Content: 0, Int: 0, Cert: 0, Rept: 0, Pain: 0, Soc: 0, eCom: 0, CP: 0 };
+  
+  selectedTypes.forEach(t => {
+    TABS[t].rows.forEach((row, i) => {
+        const a = answers[t][i];
+        if (a !== 'Don\'t Know') {
+            const s = scoreAnswer(a, row.type);
+            let area = '';
+            if (row.cat.includes('UX')) area = 'UX';
+            else if (row.cat.includes('Mobile')) area = 'Mobile';
+            else if (row.cat.includes('Scale')) area = 'Scale';
+            else if (row.cat.includes('User')) area = 'Users';
+            else if (row.cat.includes('Skill')) area = 'Skills';
+            else if (row.cat.includes('Content') || row.cat.includes('Ecosystem') || row.cat.includes('Workflows')) area = 'Content';
+            else if (row.cat.includes('Integrations')) area = 'Int';
+            else if (row.cat.includes('Certification')) area = 'Cert';
+            else if (row.cat.includes('Reporting')) area = 'Rept';
+            else if (row.cat.includes('Pain')) area = 'Pain';
+            else if (row.cat.includes('Social')) area = 'Soc';
+            else if (row.cat.includes('CPD')) area = 'CP';
+            else if (row.cat.includes('eCommerce')) area = 'eCom';
 
-  const stepColor = getRisk(primaryScore);
-  document.getElementById('actionSteps').innerHTML = steps.map((s,i) =>
-    `<div class="action-step ${stepColor}" style="animation-delay:${i*0.08}s">
-      <div class="action-num">${i+1}</div>
-      <div class="action-text">${s}</div>
-    </div>`
-  ).join('');
+            if(area) {
+                areaTotals[area] += (row.w[uc]||0)*s;
+                areaCounts[area] += 1;
+            }
+        }
+    });
+  });
 
-  // SF Notes
-  buildSfNotes(totalScore, primaryScore, steps);
+  document.getElementById('resBreakdownBars').innerHTML = Object.entries(areaTotals)
+    .filter(([k, v]) => v !== 0)
+    .map(([k, v]) => {
+        const areaMap = { UX:'UX / UI', Mobile:'Mobile App', Scale:'Scale / Language', Users:'User Management', Skills:'Skills Matrix', Content:'Courses & Workflows', Int:'Integrations', Cert:'Certifications', Rept:'Reporting', Pain:'Pain Solved', Soc:'Social', eCom:'eCommerce', CP:'CPD' };
+        const label = areaMap[k];
+        const rowsCount = areaCounts[k];
+        // Normalize for display, assuming min possible per question is -3*maxW= -3*12 = -36.
+        // It's not perfect but gives a visual indicator. Let's just use raw value.
+        // Let's assume max raw score possible is 1, min is -3.
+        const color = v >= 0 ? 'var(--grad-additional-tasks)' : 'var(--grad-prioritized-tasks)';
+        return `<div class="developed-bar-group">
+            <span style="min-width:120px">${label}</span>
+            <div class="developed-bar-track"><div class="developed-bar-fillpos" style="width:${Math.max(0,v/rowsCount/1*100)}%; background:${v>=0?'var(--grad-additional-tasks)':''}"></div></div>
+            <span class="developed-bar-val" style="color:${v>=0?'var(--green)':'var(--red)'}">${v>0?'+':''}${v}</span>
+        </div>`;
+    }).join('') || `<div style="color:var(--muted); font-size:12px">No scored requirements yet.</div>`;
+
+  // Action Steps (Nexsteps List)
+  const steps = NEXT_STEPS[getStatusKey(primaryScore, stage)] || [];
+  buildSlackNotes(totalScore, primaryScore, steps);
 }
 
-function buildSfNotes(totalScore, primaryScore, steps) {
+function buildSlackNotes(totalScore, primaryScore, steps) {
   const name = document.getElementById('prospectName').value || 'Prospect';
   const se = document.getElementById('seName').value || 'SE';
   const stage = getStage();
-  const uc = {I:'Internal',E:'External',B:'Both'}[getUC()];
   const learners = document.getElementById('learnerCount').value || 'TBC';
   const industry = document.getElementById('industry').value || 'TBC';
   const info = getRiskInfo(totalScore);
-  const date = new Date().toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'});
 
   let scoreBreakdown = selectedTypes.map(t => {
     const s = computeTabScore(t);
     const r = getRiskInfo(s);
-    return `  ${TABS[t].label}: ${s} (${r.label})`;
+    return `• ${TABS[t].label}: ${s} (${r.label})`;
   }).join('\n');
 
   // Answered rows with issues
@@ -1282,35 +1401,30 @@ function buildSfNotes(totalScore, primaryScore, steps) {
   selectedTypes.forEach(t => {
     TABS[t].rows.forEach((row, i) => {
       const ans = answers[t][i];
-      if (ans === 'Critical') criticals.push(`  [${TABS[t].label}] ${row.q} → CRITICAL`);
+      if (ans === 'Critical') criticals.push(`🚩 [${TABS[t].label}] ${row.q}`);
     });
   });
 
-  const stepsText = steps.map((s,i) => `  ${i+1}. ${s}`).join('\n');
+  const stepsText = steps.map((s,i) => `${i+1}. ${s}`).join('\n');
+  const alertIcon = info.label === 'Not Risky' ? '✅' : info.label === 'Risky' ? '⚠️' : '🚨';
 
-  const notes = `── LEARNUPON COMPLEXITY SCORECARD ──
+  const notes = `─ LEARNUPON COMPLEXITY UPDATE ─ ${alertIcon}
 Assessed by: ${se}
-Date: ${date}
 Prospect: ${name}
-Industry: ${industry}
-Learner Count: ${learners}
-Use Case: ${uc}
-Deal Stage: ${stage}
+Industry: ${industry} | Learners: ${learners}
+Stage: ${stage}
 
 OVERALL STATUS: ${info.label.toUpperCase()} (${info.sub})
 Combined Score: ${totalScore}
-
-SCORE BREAKDOWN:
 ${scoreBreakdown}
 
-${criticals.length ? `CRITICAL REQUIREMENTS FLAGGED:\n${criticals.join('\n')}\n` : ''}
-RECOMMENDED NEXT STEPS (${stage}):
+${criticals.length ? `*🚩 CRITICAL REQUIREMENTS FLAGGED:*\n${criticals.join('\n')}\n` : ''}
+Recommended Next Steps (${stage}):
 ${stepsText}
 
-─────────────────────────────
-Generated by LearnUpon Deal Complexity Scorecard`;
+Complexity Scorecard Link: [Paste link to generated Google Sheet here]`;
 
-  document.getElementById('sfNotes').value = notes;
+  document.getElementById('slackNotes').value = notes;
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -1319,7 +1433,7 @@ Generated by LearnUpon Deal Complexity Scorecard`;
 function exportExcel() {
   const wb = XLSX.utils.book_new();
   const stage = getStage(), uc = getUC();
-  const ucLabel = {I:'Internal',E:'External',B:'Both'}[uc];
+  const ucLabel = {I:'Internal',E:'External',B:'Both/Memberships'}[uc];
   const name = document.getElementById('prospectName').value || 'Prospect';
   const se = document.getElementById('seName').value || '';
   const learners = document.getElementById('learnerCount').value || '';
@@ -1339,7 +1453,7 @@ function exportExcel() {
       ['LearnUpon Deal Complexity Scorecard', '', '', '', '', ''],
       ['Prospect:', name, '', 'Assessed by:', se, ''],
       ['Industry:', industry, '', 'Date:', date, ''],
-      ['Learner Count:', learners, '', 'Use Case:', ucLabel, ''],
+      ['Learner Count:', learners, '', 'Weighting Use Case:', ucLabel, ''],
       ['Deal Stage:', stage, '', '', '', ''],
       [],
       ['Category', 'Requirement / Feature', 'Assessment', 'Weighting', 'Score', 'Weighted Score'],
@@ -1363,7 +1477,7 @@ function exportExcel() {
   const summaryData = [
     ['LearnUpon Deal Complexity — Summary'],
     ['Prospect:', name, 'SE:', se, 'Date:', new Date().toLocaleDateString('en-GB')],
-    ['Stage:', stage, 'Use Case:', ucLabel],
+    ['Stage:', stage, 'Weighting Use Case:', ucLabel],
     [],
     ['Scorecard Type', 'Score', 'Status'],
     ...selectedTypes.map(t => [TABS[t].label, computeTabScore(t), getRiskInfo(computeTabScore(t)).label]),
@@ -1375,12 +1489,12 @@ function exportExcel() {
   XLSX.utils.book_append_sheet(wb, ws2, 'Summary');
 
   XLSX.writeFile(wb, `LU_Scorecard_${name.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.xlsx`);
-  showToast('✅ Excel downloaded');
+  showToast('✅ Downloaded — Drop this file into Google Drive to create your live sheet!');
 }
 
-function copySfNotes() {
-  const text = document.getElementById('sfNotes').value;
-  navigator.clipboard.writeText(text).then(() => showToast('📋 Copied to clipboard — paste into Salesforce'));
+function copySlackNotes() {
+  const text = document.getElementById('slackNotes').value;
+  navigator.clipboard.writeText(text).then(() => showToast('📋 Copied to clipboard — paste into Slack!'));
 }
 
 // ════════════════════════════════════════════════════════════════
@@ -1397,7 +1511,7 @@ function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2800);
+  setTimeout(() => t.classList.remove('show'), 3500);
 }
 
 </script>
